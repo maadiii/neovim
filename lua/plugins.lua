@@ -140,13 +140,12 @@ require("lazy").setup({
 		"preservim/tagbar",
 		lazy=false
 	},
-
-{
-  "hedyhli/outline.nvim",
-  config = function()
-    require("outline").setup()
-    vim.keymap.set("n", "<F8>", "<cmd>Outline<CR>")
-  end,
-}
+  {
+    "hedyhli/outline.nvim",
+    config = function()
+      require("outline").setup()
+      vim.keymap.set("n", "<F8>", "<cmd>Outline<CR>")
+    end,
+  },
 })
 
