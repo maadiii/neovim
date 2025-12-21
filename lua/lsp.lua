@@ -1,0 +1,122 @@
+vim.lsp.enable("gopls")
+vim.lsp.config("gopls", {
+  settings = {
+    gopls = {
+      gofumpt = true,
+      staticcheck = false,
+      analyses = {
+        unusedparams = true,
+        nilness = true,
+        unusedwrite = true,
+      },
+    },
+  },
+})
+
+vim.lsp.enable("ts_ls")
+vim.lsp.config("ts_ls", {
+  settings = {
+    javascript = {
+      suggest = {
+        completeFunctionCalls = true,
+      },
+      inlayHints = {
+        includeInlayParameterNameHints = "all",
+        includeInlayVariableTypeHints = true,
+      },
+    },
+    typescript = {
+      suggest = {
+        completeFunctionCalls = true,
+      },
+    },
+  },
+})
+
+vim.lsp.enable("html")
+vim.lsp.enable("cssls")
+vim.lsp.enable("emmet_ls")
+vim.lsp.config("emmet_ls", {
+  filetypes = { "html", "css", "sass", "scss", "less", "javascriptreact", "typescriptreact" },
+})
+vim.lsp.config("html", {
+  settings = {
+    html = {
+      format = {
+        indentInnerHtml = true,
+      },
+    },
+  },
+})
+
+-- Inline error / virtual text
+vim.diagnostic.config({
+  virtual_text = {
+    prefix = "●",
+    spacing = 2,
+  },
+  signs = true,
+  underline = true,
+})
+
+local cmp = require("cmp")
+cmp.setup({
+  mapping = cmp.mapping.preset.insert({
+    ["<C-Space>"] = cmp.mapping.complete(),
+    ["<CR>"] = cmp.mapping.confirm({ select = true }),
+    ["<Tab>"] = cmp.mapping.select_next_item(),
+    ["<S-Tab>"] = cmp.mapping.select_prev_item(),
+  }),
+  sources = {
+    { name = "nvim_lsp" },
+    { name = "buffer" },
+    { name = "path" },
+  },
+})
+
+vim.api.nvim_create_autocmd("BufWritePre", {
+  pattern = { "*.go", "*.js", "*.jsx", "*.ts", "*.tsx" },
+  callback = function()
+    vim.lsp.buf.format({ async = false })
+  end,
+})
+
+vim.api.nvim_create_autocmd("LspAttach", {
+  callback = function(args)
+    local client = vim.lsp.get_client_by_id(args.data.client_id)
+    if client.name ~= "gopls" then
+      return
+    end
+
+    vim.api.nvim_create_autocmd("BufWritePre", {
+      buffer = args.buf,
+      callback = function()
+        vim.lsp.buf.code_action({
+          context = { only = { "source.organizeImports" } },
+          apply = true,
+        })
+      end,
+    })
+  end,
+})
+
+local lsp_signature = require("lsp_signature")
+lsp_signature.setup({
+  bind = true,
+  handler_opts = {
+    border = "rounded"
+  },
+  floating_window = true,
+  floating_window_above_cur = false,
+  hint_enable = false,
+  hint_prefix = "",
+  padding = '',
+  always_trigger = false,
+})
+
+local orig_util_open_floating_preview = vim.lsp.util.open_floating_preview
+function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
+  opts = opts or {}
+  opts.border = opts.border or "rounded" -- حاشیه گرد
+  return orig_util_open_floating_preview(contents, syntax, opts, ...)
+end
