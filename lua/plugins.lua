@@ -29,7 +29,10 @@ require("lazy").setup({
     "HiPhish/rainbow-delimiters.nvim",
     dependencies = { "nvim-treesitter/nvim-treesitter" },
   },
-  { "catppuccin/nvim", name = "catppuccin" },
+  { 
+		"catppuccin/nvim", 
+		name = "catppuccin"
+	},
   {
     "ellisonleao/gruvbox.nvim",
   },
@@ -76,6 +79,7 @@ require("lazy").setup({
       { "zbirenbaum/copilot.lua" },
       { "nvim-lua/plenary.nvim" },
     },
+		lazy = false,
     opts = {
       debug = false,
     },
@@ -92,37 +96,17 @@ require("lazy").setup({
 	{
 	  'nvim-lualine/lualine.nvim',
 	  dependencies = { 'nvim-tree/nvim-web-devicons' },
-	  config = function()
-	    require('lualine').setup({
-	      options = {
-	        theme = 'catppuccin',
-	        component_separators = { left = ')', right = '(' },
-	        section_separators = { left = '', right = '' },
-	      },
-				sections = {
-          lualine_a = { 'mode' },
-          lualine_b = { 'branch', 'diff', 'diagnostics' },
-          lualine_c = {
-            {
-              'filename',
-              path = 1,
-            },
-          },
-          lualine_x = { 'encoding', 'fileformat', 'filetype' },
-          lualine_y = { 'progress' },
-          lualine_z = { 'location' },
-        },
-	    })
-	  end
 	},
   {
-      'barrett-ruth/live-server.nvim',
-      build = 'npm add -g live-server',
-      cmd = { 'LiveServerStart', 'LiveServerStop' },
-      config = true
+    'barrett-ruth/live-server.nvim',
+		lazy = false,
+    build = 'npm add -g live-server',
+    cmd = { 'LiveServerStart', 'LiveServerStop' },
+    config = true
   },
 	{
     "stevearc/conform.nvim",
+		lazy = false,
     event = { "BufWritePre" },
     cmd = { "ConformInfo" },
     opts = {
@@ -142,58 +126,15 @@ require("lazy").setup({
   {
     "windwp/nvim-ts-autotag",
     dependencies = { "nvim-treesitter/nvim-treesitter" },
-    config = function()
-      require('nvim-ts-autotag').setup({
-        opts = {
-          enable_close = true,
-          enable_rename = true,
-          enable_close_on_slash = false,
-        },
-      })
-    end,
+  },
+  { "lewis6991/gitsigns.nvim" },
+  {
+    "folke/todo-comments.nvim",
+    dependencies = "nvim-lua/plenary.nvim",
   },
   {
-  "lewis6991/gitsigns.nvim",
-  config = function()
-    require('gitsigns').setup({
-      current_line_blame = true,
-			current_line_blame_opts ={
-    		virt_text = true,
-    		virt_text_pos = 'right_align', -- 'eol' | 'overlay' | 'right_align'
-    		delay = 400,
-    		ignore_whitespace = true,
-    		virt_text_priority = 10000,
-    		use_focus = true,
-			}
-    })
-  end
- },
- {
-   "kdheepak/lazygit.nvim",
-   dependencies = { "nvim-lua/plenary.nvim" },
-   keys = {
-     { "<space>g", ":LazyGit<CR>", desc = "Open LazyGit" },
-   },
-	 config = function() 
-		 vim.g.lazygit_use_neovim_remote = 1
-	 end
- }
+    "kdheepak/lazygit.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" },
+  },
 })
 
-vim.api.nvim_create_autocmd("FileType", {
-  callback = function()
-    local buffer = vim.api.nvim_get_current_buf()
-    local highlighters = vim.treesitter.highlighter.active
-    if not highlighters[buffer] then
-      pcall(vim.treesitter.start)
-    end
-  end,
-})
-
-vim.api.nvim_set_hl(0, "DapBreakpoint", { fg = "#fb4934" }) -- قرمز روشن
-vim.api.nvim_set_hl(0, "DapStopped", { fg = "#fabd2f", bg = "#3c3836" }) -- زرد با پس‌زمینه تیره برای خطی که دیباگر روی آن ایستاده
-vim.api.nvim_set_hl(0, "GitSignsCurrentLineBlame", {
-  fg = "#7aa2f7",
-  bg = "#1f2335",
-  italic = true,
-})

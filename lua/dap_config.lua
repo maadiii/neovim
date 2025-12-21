@@ -34,7 +34,6 @@ vim.keymap.set("n", "<leader>B", function()
   dap.set_breakpoint(vim.fn.input("Breakpoint condition: "))
 end)
 
--- تعریف آیکون‌های بزرگ برای Breakpoint
 local dap_signs = {
     Breakpoint          = { text = "🔴", texthl = "DapBreakpoint", numhl = "DapBreakpoint" },
     BreakpointCondition = { text = "🟥", texthl = "DapBreakpointCondition", numhl = "DapBreakpointCondition" },
@@ -49,8 +48,6 @@ for type, config in pairs(dap_signs) do
     vim.fn.sign_define(hl, { 
         text = config.text, 
         texthl = config.texthl, 
-        numhl = config.numhl -- شماره خط هم‌رنگ آیکون می‌شود
+        numhl = config.numhl
     })
 end
-
--- تنظیم رنگ‌های اختصاصی برای اینکه با تم Gruvbox هماهنگ باشد

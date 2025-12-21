@@ -1,32 +1,25 @@
 local opts = { noremap = true, silent = true }
 
--- Neotree
 vim.keymap.set("n", "<Space>l", function()
   require("neo-tree.command").execute({
-    action = "focus",      -- اکشن اصلی
-    source = "filesystem", -- منبع
-    reveal = true,         -- دستور جادویی: فایل فعلی را پیدا کن
-    toggle = true,         -- اگر باز بود ببند، اگر بسته بود باز کن
+    action = "focus",
+    source = "filesystem",
+    reveal = true,
+    toggle = true,
   })
 end, { desc = "NeoTree Float Reveal" })
 
--- Window navigation
 vim.api.nvim_set_keymap('n', '<C-h>', '<C-w>h', opts)
 vim.api.nvim_set_keymap('n', '<C-j>', '<C-w>j', opts)
 vim.api.nvim_set_keymap('n', '<C-k>', '<C-w>k', opts)
 vim.api.nvim_set_keymap('n', '<C-l>', '<C-w>l', opts)
-
--- Other mappings
 vim.api.nvim_set_keymap('n', 'oo', 'o<Esc>', opts)
 vim.api.nvim_set_keymap('', '<Space><Space>', 'za', opts)
-
--- Resize
 vim.api.nvim_set_keymap('n', '"', ":vertical resize -5<CR>", opts)
 vim.api.nvim_set_keymap('n', "'", ":vertical resize +5<CR>", opts)
 vim.api.nvim_set_keymap('n', '>', ":resize -1<CR>", opts)
 vim.api.nvim_set_keymap('n', '<', ":resize +1<CR>", opts)
 
--- Clear search highlight
 vim.keymap.set("n", "<leader><Space>", function()
   vim.cmd("nohlsearch")
   vim.cmd("echo")
@@ -59,14 +52,18 @@ end, { desc = "Telescope: Dynamic Workspace Symbols" })
 vim.keymap.set('n', 'gd', function()
 	builtin.lsp_definitions(themes.get_ivy())
 end, { desc = "Goto Definition" })
+
 vim.keymap.set('n', 'gf', function() 
 	builtin.lsp_references(themes.get_ivy())
 end, { desc = "Goto References" })
+
 vim.keymap.set('n', 'gi', function()
 	builtin.lsp_implementations(themes.get_ivy())
 end, { desc = "Goto Implementation" })
+
 vim.keymap.set('n', 'gh', vim.lsp.buf.hover, { desc = "LSP: Hover Documentation" })
 vim.keymap.set('n', 'gx', vim.lsp.buf.rename, { desc = "LSP: Rename" })
+
 vim.keymap.set('n', 'gv', function()
   require('telescope.builtin').lsp_definitions({ jump_type = "vsplit" })
 end, { desc = "Telescope: Definition (Vertical Split)" })
@@ -89,13 +86,16 @@ end, { desc = "Telescope: Declaration (Fallback to Definition)" })
 vim.keymap.set('n', '<C-n>', function()
     vim.diagnostic.goto_next({ float = { border = "rounded" } })
 end, { desc = "Go to next diagnostic" })
+
 vim.keymap.set('n', '<C-p>', function()
     vim.diagnostic.goto_prev({ float = { border = "rounded" } })
 end, { desc = "Go to previous diagnostic" })
-local opts = { noremap = true, silent = true }
 
+local opts = { noremap = true, silent = true }
 vim.keymap.set('n', '<space>d', '<cmd>Telescope diagnostics theme=ivy<CR>', opts)
 vim.keymap.set('n', '<space>c', '<cmd>Telescope commands theme=ivy<CR>', opts)
 vim.keymap.set('n', '<space>o', '<cmd>Telescope lsp_document_symbols theme=ivy<CR>', opts)
 vim.keymap.set('n', '<space>s', '<cmd>Telescope lsp_dynamic_workspace_symbols theme=ivy<CR>', opts)
 vim.keymap.set('n', '<leader>ac', vim.lsp.buf.code_action, { desc = "LSP Quick Fix" })
+vim.keymap.set('n', '<space>g', ':LazyGit<CR>', {desc = 'Open LazyGit'})
+vim.keymap.set('n', '<leader>cc', '<cmd>CopilotChatToggle<CR>', {desc = 'Open LazyGit'})

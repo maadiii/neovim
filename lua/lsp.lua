@@ -36,20 +36,9 @@ vim.lsp.config("ts_ls", {
 vim.lsp.enable("html")
 vim.lsp.enable("cssls")
 vim.lsp.enable("emmet_ls")
-vim.lsp.config("emmet_ls", {
-  filetypes = { "html", "css", "sass", "scss", "less", "javascriptreact", "typescriptreact" },
-})
-vim.lsp.config("html", {
-  settings = {
-    html = {
-      format = {
-        indentInnerHtml = true,
-      },
-    },
-  },
-})
+vim.lsp.config("emmet_ls", { filetypes = { "html", "css", "sass", "scss", "less", "javascriptreact", "typescriptreact" }})
+vim.lsp.config("html", { settings = { html = { format = { indentInnerHtml = true }}}})
 
--- Inline error / virtual text
 vim.diagnostic.config({
   virtual_text = {
     prefix = "●",

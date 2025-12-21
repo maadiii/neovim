@@ -89,132 +89,93 @@ autopairs.setup({
   enable_check_bracket_pairs = true,
 })
 
-local golangci_config = [[
-version: 2
+vim.api.nvim_create_autocmd("VimEnter", {
+  callback = function()
+    vim.cmd("Copilot enable")
+  end,
+})
 
-linters:
-  enable-all: true
-  enable:
-    - forbidigo
-    - gocritic
-    - bodyclose
-    - exhaustive
-    - goconst
-    - gocognit
-    - gochecknoinits
-    - godot
-    - godox
-    - wsl
-  disable:
-    - lll
-    - mnd
-    - exhaustruct
-    - wrapcheck
-    - forcetypeassert
-    - tagliatelle
-    - dupl
-    - varnamelen
-    - depguard
-    - nonamedreturns
-    - gochecknoglobals
-    - paralleltest
-    - errorlint
-    - cyclop
-    - ireturn
-    - nakedret
-    - revive
-    - tagalign
-    - recvcheck
-    - err113
-run:
-  timeout: 5m
-  issues-exit-code: 1
-]]
-
--- -----------------------------------------
--- Find Go project root (via go.mod)
--- -----------------------------------------
-local function go_project_root(bufnr)
-  local bufname = vim.api.nvim_buf_get_name(bufnr)
-  local gomod = vim.fs.find("go.mod", {
-    upward = true,
-    path = bufname,
-  })[1]
-
-  if gomod then
-    return vim.fs.dirname(gomod)
-  end
-
-  return nil
-end
-
--- -----------------------------------------
--- Ensure .golangci.yml exists
--- -----------------------------------------
-local function ensure_golangci_config(bufnr)
-  local root = go_project_root(bufnr)
-  if not root then
-    return
-  end
-
-  local config_path = root .. "/.golangci.yml"
-
-  if vim.fn.filereadable(config_path) == 1 then
-    return
-  end
-
-  local file = io.open(config_path, "w")
-  if not file then
-    return
-  end
-
-  file:write(golangci_config)
-  file:close()
-
-  vim.notify(".golangci.yml created in project root", vim.log.levels.INFO)
-end
+vim.api.nvim_set_hl(0, "DapBreakpoint", { fg = "#fb4934" }) -- قرمز روشن
+vim.api.nvim_set_hl(0, "DapStopped", { fg = "#fabd2f", bg = "#3c3836" }) -- زرد با پس‌زمینه تیره برای خطی که دیباگر روی آن ایستاده
+vim.api.nvim_set_hl(0, "GitSignsCurrentLineBlame", {
+  fg = "#7aa2f7",
+  bg = "#1f2335",
+  italic = true,
+})
 
 
-local null_ls = require("null-ls")
-null_ls.setup({
-  sources = {
-    null_ls.builtins.diagnostics.golangci_lint.with({
-      command = "golangci-lint", 
-    }),
+require("todo-comments").setup {
+  signs = true, -- نمایش آیکن در گوتر لاین
+  keywords = {
+    FIX = {
+      icon = " ", -- icon used for the sign, and in search results
+      color = "warning", -- can be a hex color, or a named color (see below)
+      alt = { "FIXME", "BUG", "FIXIT", "ISSUE" }, -- a set of other keywords that all map to this FIX keywords
+      -- signs = false, -- configure signs for some keywords individually
+    },
+    TODO = { icon = " ", color = "info" },
+    HACK = { icon = " ", color = "warning" },
+    WARN = { icon = " ", color = "warning", alt = { "WARNING", "XXX" } },
+    PERF = { icon = " ", alt = { "OPTIM", "PERFORMANCE", "OPTIMIZE" } },
+    NOTE = { icon = " ", color = "hint", alt = { "INFO" } },
+    TEST = { icon = "⏲ ", color = "test", alt = { "TESTING", "PASSED", "FAILED" } },
+  },
+  highlight = {
+    before = "", -- رنگ قبل از کامنت
+    keyword = "wide", -- رنگ خود کلمه
+    after = "", -- رنگ بعد از کامنت
+    pattern = [[.*<(KEYWORDS)>:]], -- regex سفارشی
+  },
+}
+
+require('gitsigns').setup({
+  current_line_blame = true,
+	current_line_blame_opts ={
+		virt_text = true,
+		virt_text_pos = 'right_align', -- 'eol' | 'overlay' | 'right_align'
+		delay = 400,
+		ignore_whitespace = true,
+		virt_text_priority = 10000,
+		use_focus = true,
+	}
+})
+
+require('nvim-ts-autotag').setup({
+  opts = {
+    enable_close = true,
+    enable_rename = true,
+    enable_close_on_slash = false,
+  },
+})
+
+require('lualine').setup({
+  options = {
+    theme = 'catppuccin',
+    component_separators = { left = ')', right = '(' },
+    section_separators = { left = '', right = '' },
+  },
+	sections = {
+    lualine_a = { 'mode' },
+    lualine_b = { 'branch', 'diff', 'diagnostics' },
+    lualine_c = {
+      {
+        'filename',
+        path = 1,
+      },
+    },
+    lualine_x = { 'encoding', 'fileformat', 'filetype' },
+    lualine_y = { 'progress' },
+    lualine_z = { 'location' },
   },
 })
 
 vim.api.nvim_create_autocmd("FileType", {
-  pattern = "go",
-  callback = function(args)
-    ensure_golangci_config(args.buf)
-  end,
-})
-vim.api.nvim_create_autocmd("FileType", {
-    pattern = "go",
-    callback = function()
-        vim.keymap.set("n", "gb", function()
-            vim.cmd("write") -- ذخیره فایل
-            print("Linting...")
-            local cmd = "golangci-lint run"
-            local output = vim.fn.systemlist(cmd)
-            if vim.v.shell_error ~= 0 and #output > 0 then
-                vim.fn.setqflist({}, 'r', {title = "GolangCI-Lint", lines = output})
-                vim.cmd("copen")
-            elseif vim.v.shell_error == 0 then
-                vim.cmd("cclose")
-                print("Clean! No issues found.")
-            else
-                print("Error running linter: " .. table.concat(output, " "))
-            end
-        end, { buffer = true, silent = true })
-    end
-})
-
-
-vim.api.nvim_create_autocmd("VimEnter", {
   callback = function()
-    vim.cmd("Copilot enable")
+    local buffer = vim.api.nvim_get_current_buf()
+    local highlighters = vim.treesitter.highlighter.active
+    if not highlighters[buffer] then
+      pcall(vim.treesitter.start)
+    end
   end,
 })
 
