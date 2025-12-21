@@ -170,30 +170,19 @@ require('lualine').setup({
   },
 })
 
-vim.g.tagbar_ctags_bin = "ctags"  -- مسیر ctags
-
-vim.g.tagbar_type_jsx = {
-  ctagsbin = "ctags",
-  kinds = {
-    "f:function",
-    "c:class",
-    "m:method",
-    "v:variable",
-  },
-  sro = ".",
-  kind2scope = {
-    c = "class",
-    f = "function",
-  },
-  scope2kind = {
-    class = "c",
-  },
-  -- اینجا parser مدرن می‌آید
-  ctags_extra_args = "--langmap=JSX:.jsx.tsx --languages=JavaScript,TypeScript,TSX,JSX"
-}
-
--- برای TSX هم می‌توان همان را استفاده کرد
-vim.g.tagbar_type_tsx = vim.g.tagbar_type_jsx
+require'colorizer'.setup(
+  {'*'},  -- تمام فایل‌ها
+  {
+    RGB      = true; -- #RGB hex codes
+    RRGGBB   = true; -- #RRGGBB hex codes
+    names    = true; -- نام‌های رنگ مثل "red"
+    RRGGBBAA = true; -- #RRGGBBAA hex codes
+    rgb_fn   = true; -- rgb() و rgba()
+    hsl_fn   = true; -- hsl() و hsla()
+    css      = true; -- enable all CSS features
+    tailwind = true; -- enable tailwind colors
+  }
+)
 
 vim.api.nvim_create_autocmd("FileType", {
   callback = function()
