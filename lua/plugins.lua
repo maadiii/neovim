@@ -136,5 +136,17 @@ require("lazy").setup({
     "kdheepak/lazygit.nvim",
     dependencies = { "nvim-lua/plenary.nvim" },
   },
+	{
+		"preservim/tagbar",
+		lazy=false
+	},
+
+{
+  "hedyhli/outline.nvim",
+  config = function()
+    require("outline").setup()
+    vim.keymap.set("n", "<F8>", "<cmd>Outline<CR>")
+  end,
+}
 })
 

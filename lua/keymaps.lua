@@ -91,7 +91,6 @@ vim.keymap.set('n', '<C-p>', function()
     vim.diagnostic.goto_prev({ float = { border = "rounded" } })
 end, { desc = "Go to previous diagnostic" })
 
-local opts = { noremap = true, silent = true }
 vim.keymap.set('n', '<space>d', '<cmd>Telescope diagnostics theme=ivy<CR>', opts)
 vim.keymap.set('n', '<space>c', '<cmd>Telescope commands theme=ivy<CR>', opts)
 vim.keymap.set('n', '<space>o', '<cmd>Telescope lsp_document_symbols theme=ivy<CR>', opts)

@@ -23,12 +23,13 @@ vim.opt.termguicolors = true
 
 local treesitter = require("nvim-treesitter")
 treesitter.setup({
-  ensure_installed = { "go", "lua", "javascript", "typescript", "vim", "html", "css" }, 
+  ensure_installed = { "go", "lua", "tsx", "jsx", "javascript", "javascriptreact", "typescript", "typescriptreactt", "vim", "html", "css" }, 
   highlight = {
     enable = true,
     additional_vim_regex_highlighting = true,
   },
   indent = { enable = true },
+	auto_install = true
 })
 
 
@@ -168,6 +169,31 @@ require('lualine').setup({
     lualine_z = { 'location' },
   },
 })
+
+vim.g.tagbar_ctags_bin = "ctags"  -- مسیر ctags
+
+vim.g.tagbar_type_jsx = {
+  ctagsbin = "ctags",
+  kinds = {
+    "f:function",
+    "c:class",
+    "m:method",
+    "v:variable",
+  },
+  sro = ".",
+  kind2scope = {
+    c = "class",
+    f = "function",
+  },
+  scope2kind = {
+    class = "c",
+  },
+  -- اینجا parser مدرن می‌آید
+  ctags_extra_args = "--langmap=JSX:.jsx.tsx --languages=JavaScript,TypeScript,TSX,JSX"
+}
+
+-- برای TSX هم می‌توان همان را استفاده کرد
+vim.g.tagbar_type_tsx = vim.g.tagbar_type_jsx
 
 vim.api.nvim_create_autocmd("FileType", {
   callback = function()
