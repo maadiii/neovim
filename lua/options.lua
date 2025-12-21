@@ -149,6 +149,7 @@ require('nvim-ts-autotag').setup({
   },
 })
 
+
 require('lualine').setup({
   options = {
     theme = 'catppuccin',
@@ -164,9 +165,14 @@ require('lualine').setup({
         path = 1,
       },
     },
-    lualine_x = { 'encoding', 'fileformat', 'filetype' },
+		lualine_x = { 
+			function()
+				return require("nvim-navic").get_location()
+			end,
+			'filetype',
+		},
     lualine_y = { 'progress' },
-    lualine_z = { 'location' },
+    lualine_z = { 'location', '%L' },
   },
 })
 

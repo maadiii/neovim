@@ -1,5 +1,13 @@
+local navic = require("nvim-navic")
+local on_attach = function(client, bufnr)
+	if client.server_capabilities.documentSymbolProvider then
+		navic.attach(client, bufnr)
+	end
+end
+
 vim.lsp.enable("gopls")
 vim.lsp.config("gopls", {
+	on_attach = on_attach,
   settings = {
     gopls = {
       gofumpt = true,
@@ -15,6 +23,7 @@ vim.lsp.config("gopls", {
 
 vim.lsp.enable("ts_ls")
 vim.lsp.config("ts_ls", {
+	on_attach = on_attach,
   settings = {
     javascript = {
       suggest = {

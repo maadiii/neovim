@@ -147,6 +147,10 @@ require("lazy").setup({
       vim.keymap.set("n", "<F8>", "<cmd>Outline<CR>")
     end,
   },
-	{ "norcalli/nvim-colorizer.lua", name="colorizer" }
+	{ "norcalli/nvim-colorizer.lua", name="colorizer" },
+  {
+    "SmiteshP/nvim-navic",
+    dependencies = "neovim/nvim-lspconfig"
+  }
 })
 
