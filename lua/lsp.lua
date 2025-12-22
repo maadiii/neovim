@@ -76,14 +76,14 @@ preselect = cmp.PreselectMode.None,
 vim.api.nvim_create_autocmd("BufWritePre", {
   pattern = { "*.go", "*.js", "*.jsx", "*.ts", "*.tsx" },
   callback = function()
-    vim.lsp.buf.format({ async = false })
+    vim.lsp.buf.format({ async = true })
   end,
 })
 
 vim.api.nvim_create_autocmd("LspAttach", {
   callback = function(args)
     local client = vim.lsp.get_client_by_id(args.data.client_id)
-    if client.name ~= "gopls" then
+    if client == nil or client.name ~= "gopls" then
       return
     end
 
@@ -94,6 +94,8 @@ vim.api.nvim_create_autocmd("LspAttach", {
           context = { only = { "source.organizeImports" } },
           apply = true,
         })
+        
+        vim.lsp.buf.format({ async = false, timeout_ms = 2000 })
       end,
     })
   end,
