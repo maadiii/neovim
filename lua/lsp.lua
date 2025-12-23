@@ -8,6 +8,7 @@ end
 vim.lsp.enable("gopls")
 vim.lsp.config("gopls", {
 	on_attach = on_attach,
+	on_init = on_init,
   settings = {
     gopls = {
       gofumpt = true,
@@ -16,6 +17,36 @@ vim.lsp.config("gopls", {
         unusedparams = true,
         nilness = true,
         unusedwrite = true,
+      },
+    },
+  },
+})
+
+local function get_python_path()
+  local cwd = vim.loop.cwd()
+  if vim.env.VIRTUAL_ENV then
+    return vim.env.VIRTUAL_ENV .. '/bin/python'
+  elseif vim.fn.executable(cwd .. '/venv/bin/python') == 1 then
+    return cwd .. '/venv/bin/python'
+  elseif vim.fn.executable(cwd .. '/.venv/bin/python') == 1 then
+    return cwd .. '/.venv/bin/python'
+  else
+    return 'python3'
+  end
+end
+
+vim.lsp.enable("pyright")
+vim.lsp.config("pyright", {
+	on_attach = on_attach,
+  on_init = function(client)
+    client.config.settings.python.pythonPath = get_python_path()
+  end,
+  settings = {
+    python = {
+      analysis = {
+        autoSearchPaths = true,
+        useLibraryCodeForTypes = true,
+        diagnosticMode = "workspace",
       },
     },
   },

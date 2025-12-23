@@ -41,14 +41,6 @@ vim.keymap.set("n", "<leader>fb", function()
   builtin.buffers(themes.get_ivy())
 end, { desc = "Telescope buffers" })
 
--- vim.keymap.set('n', '<leader>s', function()
---   builtin.lsp_document_symbols(themes.get_ivy())
--- end, { desc = "Document Symbols" })
-
-vim.keymap.set('n', '<leader>s', function()
-  builtin.lsp_dynamic_workspace_symbols(themes.get_ivy())
-end, { desc = "Telescope: Dynamic Workspace Symbols" })
-
 vim.keymap.set('n', 'gd', function()
 	builtin.lsp_definitions(themes.get_ivy())
 end, { desc = "Goto Definition" })
@@ -98,3 +90,4 @@ vim.keymap.set('n', '<space>s', '<cmd>Telescope lsp_dynamic_workspace_symbols th
 vim.keymap.set('n', '<leader>ac', vim.lsp.buf.code_action, { desc = "LSP Quick Fix" })
 vim.keymap.set('n', '<space>g', ':LazyGit<CR>', {desc = 'Open LazyGit'})
 vim.keymap.set('n', '<leader>cc', '<cmd>CopilotChatToggle<CR>', {desc = 'Open LazyGit'})
+vim.keymap.set('n', '<leader>db', '<cmd>DBUIToggle<CR>', {desc = 'Open DBUI'})

@@ -19,11 +19,12 @@ vim.o.splitbelow = true
 vim.o.splitright = true
 vim.o.undofile = true
 vim.opt.termguicolors = true
+vim.g.python3_host_prog = "/home/maadi/.venvs/nvim/bin/python"
 -- vim.o.guicursor = "n-v-c-sm:block"
 
 local treesitter = require("nvim-treesitter")
 treesitter.setup({
-  ensure_installed = { "go", "lua", "tsx", "jsx", "javascript", "javascriptreact", "typescript", "typescriptreactt", "vim", "html", "css" }, 
+  ensure_installed = { "python", "go", "lua", "tsx", "jsx", "javascript", "javascriptreact", "typescript", "typescriptreactt", "vim", "html", "css" }, 
   highlight = {
     enable = true,
     additional_vim_regex_highlighting = true,
@@ -48,7 +49,6 @@ gruvbox.setup({
 		["@function.call"] = { link = "GruvboxAqua" },
   }
 })
-vim.cmd("colorscheme gruvbox")
 
 vim.diagnostic.config({
   virtual_text = {
@@ -149,6 +149,14 @@ require('nvim-ts-autotag').setup({
   },
 })
 
+local function venv_status()
+  local venv = os.getenv("VIRTUAL_ENV")
+  if venv then
+    local venv_name = string.match(venv, "[^/]+$")
+    return venv_name -- آیکون پایتون + نام venv
+  end
+  return ""
+end
 
 require('lualine').setup({
   options = {
@@ -169,6 +177,7 @@ require('lualine').setup({
 			function()
 				return require("nvim-navic").get_location()
 			end,
+			venv_status,
 			'filetype',
 		},
     lualine_y = { 'progress' },
@@ -200,3 +209,34 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
+local function auto_theme_switch()
+    local is_go_project = vim.fn.glob("go.mod") ~= ""
+    
+    if is_go_project then
+      local gruvbox = require("gruvbox")
+      gruvbox.setup({
+      	contrast = "soft", 
+      	transparent_mode = false,
+        overrides = {
+      		Type = { link = "GruvboxOrange" },
+      		["@operator"] = { link = "GruvboxRed" },
+      		["@type.definition.go"] = { link = "GruvboxOrange"},
+          ["@variable.parameter"] = { link = "GruvboxFg2" },
+      		["@variable.member"] = { link = "GruvboxFg2" },
+      		["@function"] = { link = "GruvboxAqua" },
+      		["@function.method"] = { link = "GruvboxAqua" },
+      		["@function.call"] = { link = "GruvboxAqua" },
+        }
+      })
+      vim.cmd("colorscheme gruvbox")
+    else
+      vim.cmd("colorscheme kanagawa")
+    end
+end
+
+vim.api.nvim_create_autocmd({ "VimEnter", "DirChanged" }, {
+  callback = function()
+      auto_theme_switch()
+  end,
+})
+require('lualine').setup({ options = { theme = 'catppuccin' } })

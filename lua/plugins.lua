@@ -29,13 +29,6 @@ require("lazy").setup({
     "HiPhish/rainbow-delimiters.nvim",
     dependencies = { "nvim-treesitter/nvim-treesitter" },
   },
-  { 
-		"catppuccin/nvim", 
-		name = "catppuccin"
-	},
-  {
-    "ellisonleao/gruvbox.nvim",
-  },
   { "neovim/nvim-lspconfig" },
   {
     "hrsh7th/nvim-cmp",
@@ -174,6 +167,46 @@ require("lazy").setup({
 	    -- See also `vertical_bar_cursor_insert_mode` and `distance_stop_animating_vertical_bar`.
 	    smear_insert_mode = true,
 	  },
-	}
+	},
+  {
+    "tpope/vim-dadbod",
+    lazy = true,
+  },
+  {
+    "kristijanhusak/vim-dadbod-ui",
+    dependencies = {
+      { "tpope/vim-dadbod", lazy = true },
+      { 
+				"kristijanhusak/vim-dadbod-completion", 
+				ft = { "psql", "sql", "mysql", "plsql" }, 
+				lazy = true,
+			},
+    },
+    cmd = {
+      "DBUI",
+      "DBUIToggle",
+      "DBUIAddConnection",
+      "DBUIFindBuffer",
+    },
+		init = function()
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = { "psql", "sql", "mysql", "plsql" },
+        callback = function()
+          require("cmp").setup.buffer({
+            sources = {
+              { name = "vim-dadbod-completion" },
+              { name = "buffer" },
+            },
+          })
+        end,
+      })
+    end,
+  },
+  { 
+		"catppuccin/nvim", 
+		name = "catppuccin"
+	},
+  {"ellisonleao/gruvbox.nvim"},
+	{"rebelot/kanagawa.nvim"}
 })
 
