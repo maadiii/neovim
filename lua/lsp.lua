@@ -51,6 +51,7 @@ vim.lsp.config("pyright", {
     },
   },
 })
+vim.lsp.config("ruff", {})
 
 vim.lsp.enable("ts_ls")
 vim.lsp.config("ts_ls", {

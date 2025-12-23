@@ -109,6 +109,7 @@ require("lazy").setup({
         javascript = { "prettier" },
         javascriptreact = { "prettier" },
         json = { "prettier" },
+				python = { "autopep8" },
       },
       format_on_save = {
         timeout_ms = 500,
