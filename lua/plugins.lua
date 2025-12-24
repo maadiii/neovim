@@ -61,7 +61,10 @@ require("lazy").setup({
   },
 	{
 	  "nvimtools/none-ls.nvim",
-	  dependencies = { "nvim-lua/plenary.nvim" }
+	  dependencies = { 
+			"nvim-lua/plenary.nvim", 
+			"nvimtools/none-ls-extras.nvim"
+		}
 	},
 	{ "mfussenegger/nvim-lint" },
 	{ "github/copilot.vim" },
@@ -109,7 +112,16 @@ require("lazy").setup({
         javascript = { "prettier" },
         javascriptreact = { "prettier" },
         json = { "prettier" },
-				python = { "autopep8" },
+				python = { "ruff_fix", "black" },
+      },
+		  formatters = {
+				black = {
+      	  command = "/home/maadi/.local/bin/black",
+      	  prepend_args = { "--line-length", "59", "--preview" },
+      	},
+      	ruff_fix = {
+      	  args = { "check", "--fix", "--force-exclude", "--exit-zero", "--no-cache", "--stdin-filename", "$FILENAME", "-" },
+      	},
       },
       format_on_save = {
         timeout_ms = 500,
@@ -209,6 +221,15 @@ require("lazy").setup({
 	},
   {"ellisonleao/gruvbox.nvim"},
 	{"rebelot/kanagawa.nvim"},
-	{ 'tpope/vim-dotenv' }
+	{ 'tpope/vim-dotenv' },
+  {
+    "lukas-reineke/indent-blankline.nvim",
+    main = "ibl",
+    opts = {
+  		scope = {
+  		  enabled = false
+  		},
+		}
+  }
 })
 

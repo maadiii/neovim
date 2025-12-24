@@ -240,3 +240,12 @@ vim.api.nvim_create_autocmd({ "VimEnter", "DirChanged" }, {
   end,
 })
 require('lualine').setup({ options = { theme = 'catppuccin' } })
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "python",
+  callback = function()
+    vim.opt_local.list = true
+    vim.opt_local.listchars = {
+      leadmultispace = ".",
+    }
+  end,
+})

@@ -89,5 +89,15 @@ vim.keymap.set('n', '<space>o', '<cmd>Telescope lsp_document_symbols theme=ivy<C
 vim.keymap.set('n', '<space>s', '<cmd>Telescope lsp_dynamic_workspace_symbols theme=ivy<CR>', opts)
 vim.keymap.set('n', '<leader>ac', vim.lsp.buf.code_action, { desc = "LSP Quick Fix" })
 vim.keymap.set('n', '<space>g', ':LazyGit<CR>', {desc = 'Open LazyGit'})
-vim.keymap.set('n', '<leader>cc', '<cmd>CopilotChatToggle<CR>', {desc = 'Open LazyGit'})
 vim.keymap.set('n', '<leader>db', '<cmd>DBUIToggle<CR>', {desc = 'Open DBUI'})
+
+vim.keymap.set('n', '<leader>cc', '<cmd>CopilotChatToggle<CR>', {desc = 'Copilot chat toggle'})
+vim.keymap.set('n', '<leader>ca', '<cmd>CopilotChatPrompt<CR>', { desc = 'CopilotChat: ask prompt' })
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'copilot-chat',
+  callback = function(ev)
+    vim.keymap.set('n', '<leader>a', function()
+      require('CopilotChat.actions').apply()
+    end, { buffer = ev.buf, desc = 'CopilotChat: apply response' })
+  end,
+})
