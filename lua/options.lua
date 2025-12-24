@@ -21,6 +21,7 @@ vim.o.undofile = true
 vim.opt.termguicolors = true
 vim.g.python3_host_prog = "/home/maadi/.venvs/nvim/bin/python"
 -- vim.o.guicursor = "n-v-c-sm:block"
+vim.opt.colorcolumn = "79"
 
 local treesitter = require("nvim-treesitter")
 treesitter.setup({

@@ -117,7 +117,7 @@ require("lazy").setup({
 		  formatters = {
 				black = {
       	  command = "/home/maadi/.local/bin/black",
-      	  prepend_args = { "--line-length", "59", "--preview" },
+      	  prepend_args = { "--line-length", "79" },
       	},
       	ruff_fix = {
       	  args = { "check", "--fix", "--force-exclude", "--exit-zero", "--no-cache", "--stdin-filename", "$FILENAME", "-" },
