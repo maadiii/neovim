@@ -22,6 +22,8 @@ vim.opt.termguicolors = true
 vim.g.python3_host_prog = "/home/maadi/.venvs/nvim/bin/python"
 -- vim.o.guicursor = "n-v-c-sm:block"
 vim.opt.colorcolumn = "79"
+vim.opt.title = true
+vim.opt.titlestring = " %{fnamemodify(getcwd(), ':~')} "
 
 local treesitter = require("nvim-treesitter")
 treesitter.setup({
@@ -241,12 +243,3 @@ vim.api.nvim_create_autocmd({ "VimEnter", "DirChanged" }, {
   end,
 })
 require('lualine').setup({ options = { theme = 'catppuccin' } })
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = "python",
-  callback = function()
-    vim.opt_local.list = true
-    vim.opt_local.listchars = {
-      leadmultispace = ".",
-    }
-  end,
-})

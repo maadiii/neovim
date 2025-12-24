@@ -101,3 +101,6 @@ vim.api.nvim_create_autocmd('FileType', {
     end, { buffer = ev.buf, desc = 'CopilotChat: apply response' })
   end,
 })
+
+local opts = { noremap=true, silent=true }
+
