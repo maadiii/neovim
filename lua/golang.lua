@@ -118,3 +118,49 @@ vim.api.nvim_create_autocmd("FileType", {
         end, { buffer = true, silent = true })
     end
 })
+local function go_tag_modify(mode)
+    local file = vim.fn.expand("%:p")
+    local line_num = vim.fn.line(".")
+    local line_text = vim.api.nvim_get_current_line()
+    
+    local struct_name = line_text:match("type%s+([%w_]+)%s+struct")
+
+    local function run_cmd(tag)
+        local target
+        if struct_name then
+            target = "-struct " .. struct_name
+        else
+            target = "-line " .. line_num
+        end
+
+        local cmd
+        if mode == "add" then
+            cmd = string.format("gomodifytags -file %s %s -add-tags %s -transform snakecase -w", 
+                                 vim.fn.shellescape(file), target, vim.fn.shellescape(tag))
+        elseif mode == "remove" then
+            cmd = string.format("gomodifytags -file %s %s -remove-tags %s -w", 
+                                 vim.fn.shellescape(file), target, vim.fn.shellescape(tag))
+        end
+
+        vim.cmd("write")
+        local output = vim.fn.system(cmd)
+        
+        if vim.v.shell_error ~= 0 then
+            print("Error: " .. output)
+        else
+            vim.cmd("edit!")
+            local target_desc = struct_name and "Struct '" .. struct_name .. "'" or "Field"
+            print(string.format("%s %s tags from %s", (mode == "add" and "Added" or "Removed"), tag, target_desc))
+        end
+    end
+
+    local prompt_msg = mode == "add" and "Add Tag (e.g. json): " or "Remove Tag (e.g. json): "
+    
+    vim.ui.input({ prompt = prompt_msg }, function(tag)
+        if tag and tag ~= "" then
+            run_cmd(tag)
+        end
+    end)
+end
+vim.keymap.set("n", "<leader>at", function() go_tag_modify("add") end, { desc = "Add Go Tag (Smart)" })
+vim.keymap.set("n", "<leader>ct", function() go_tag_modify("remove") end, { desc = "Remove Specific Go Tag (Smart)" })

@@ -22,36 +22,6 @@ vim.lsp.config("gopls", {
   },
 })
 
-local function get_python_path()
-  local cwd = vim.loop.cwd()
-  if vim.env.VIRTUAL_ENV then
-    return vim.env.VIRTUAL_ENV .. '/bin/python'
-  elseif vim.fn.executable(cwd .. '/venv/bin/python') == 1 then
-    return cwd .. '/venv/bin/python'
-  elseif vim.fn.executable(cwd .. '/.venv/bin/python') == 1 then
-    return cwd .. '/.venv/bin/python'
-  else
-    return 'python3'
-  end
-end
-
-vim.lsp.enable("pyright")
-vim.lsp.config("pyright", {
-	on_attach = on_attach,
-  on_init = function(client)
-    client.config.settings.python.pythonPath = get_python_path()
-  end,
-  settings = {
-    python = {
-      analysis = {
-        autoSearchPaths = true,
-        useLibraryCodeForTypes = true,
-        diagnosticMode = "workspace",
-      },
-    },
-  },
-})
-
 vim.lsp.enable("ts_ls")
 vim.lsp.config("ts_ls", {
 	on_attach = on_attach,
@@ -71,6 +41,11 @@ vim.lsp.config("ts_ls", {
       },
     },
   },
+})
+
+vim.lsp.enable("dockerls")
+vim.lsp.config("dockerls", {
+	on_attach = on_attach,
 })
 
 vim.lsp.enable("html")
@@ -149,6 +124,6 @@ lsp_signature.setup({
 local orig_util_open_floating_preview = vim.lsp.util.open_floating_preview
 function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
   opts = opts or {}
-  opts.border = opts.border or "rounded" -- حاشیه گرد
+  opts.border = opts.border or "rounded"
   return orig_util_open_floating_preview(contents, syntax, opts, ...)
 end

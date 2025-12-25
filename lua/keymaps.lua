@@ -92,7 +92,7 @@ vim.keymap.set('n', '<space>g', ':LazyGit<CR>', {desc = 'Open LazyGit'})
 vim.keymap.set('n', '<leader>db', '<cmd>DBUIToggle<CR>', {desc = 'Open DBUI'})
 
 vim.keymap.set('n', '<leader>cc', '<cmd>CopilotChatToggle<CR>', {desc = 'Copilot chat toggle'})
-vim.keymap.set('n', '<leader>ca', '<cmd>CopilotChatPrompt<CR>', { desc = 'CopilotChat: ask prompt' })
+vim.keymap.set('n', '<leader>cv', '<cmd>CopilotChatPrompt<CR>', { desc = 'CopilotChat: ask prompt' })
 vim.api.nvim_create_autocmd('FileType', {
   pattern = 'copilot-chat',
   callback = function(ev)
@@ -101,6 +101,3 @@ vim.api.nvim_create_autocmd('FileType', {
     end, { buffer = ev.buf, desc = 'CopilotChat: apply response' })
   end,
 })
-
-local opts = { noremap=true, silent=true }
-

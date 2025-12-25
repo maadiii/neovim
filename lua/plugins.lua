@@ -112,16 +112,6 @@ require("lazy").setup({
         javascript = { "prettier" },
         javascriptreact = { "prettier" },
         json = { "prettier" },
-				python = { "ruff_fix", "black" },
-      },
-		  formatters = {
-				black = {
-      	  command = "/home/maadi/.local/bin/black",
-      	  prepend_args = { "--line-length", "79" },
-      	},
-      	ruff_fix = {
-      	  args = { "check", "--fix", "--force-exclude", "--exit-zero", "--no-cache", "--stdin-filename", "$FILENAME", "-" },
-      	},
       },
       format_on_save = {
         timeout_ms = 500,
@@ -230,6 +220,6 @@ require("lazy").setup({
   		  enabled = false
   		},
 		}
-  }
+  },
 })
 

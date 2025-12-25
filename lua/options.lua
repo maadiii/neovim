@@ -19,7 +19,6 @@ vim.o.splitbelow = true
 vim.o.splitright = true
 vim.o.undofile = true
 vim.opt.termguicolors = true
-vim.g.python3_host_prog = "/home/maadi/.venvs/nvim/bin/python"
 -- vim.o.guicursor = "n-v-c-sm:block"
 vim.opt.colorcolumn = "79"
 vim.opt.title = true
@@ -27,7 +26,7 @@ vim.opt.titlestring = " %{fnamemodify(getcwd(), ':~')} "
 
 local treesitter = require("nvim-treesitter")
 treesitter.setup({
-  ensure_installed = { "python", "go", "lua", "tsx", "jsx", "javascript", "javascriptreact", "typescript", "typescriptreactt", "vim", "html", "css" }, 
+  ensure_installed = { "go", "lua", "tsx", "jsx", "javascript", "javascriptreact", "typescript", "typescriptreactt", "vim", "html", "css" }, 
   highlight = {
     enable = true,
     additional_vim_regex_highlighting = true,
@@ -213,7 +212,7 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 local function auto_theme_switch()
-    local is_go_project = vim.fn.glob("go.mod") ~= ""
+    local is_go_project = vim.fn.glob("go.mod") ~= "" or vim.fn.glob("go.work") ~= ""
     
     if is_go_project then
       local gruvbox = require("gruvbox")
