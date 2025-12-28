@@ -35,23 +35,6 @@ treesitter.setup({
 	auto_install = true
 })
 
-
-local gruvbox = require("gruvbox")
-gruvbox.setup({
-	contrast = "soft", 
-	transparent_mode = false,
-  overrides = {
-		Type = { link = "GruvboxOrange" },
-		["@operator"] = { link = "GruvboxRed" },
-		["@type.definition.go"] = { link = "GruvboxOrange"},
-    ["@variable.parameter"] = { link = "GruvboxFg2" },
-		["@variable.member"] = { link = "GruvboxFg2" },
-		["@function"] = { link = "GruvboxAqua" },
-		["@function.method"] = { link = "GruvboxAqua" },
-		["@function.call"] = { link = "GruvboxAqua" },
-  }
-})
-
 vim.diagnostic.config({
   virtual_text = {
       prefix = '●', -- علامت قبل از متن خطا در انتهای خط
@@ -211,34 +194,5 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
-local function auto_theme_switch()
-    local is_go_project = vim.fn.glob("go.mod") ~= "" or vim.fn.glob("go.work") ~= ""
-    
-    if is_go_project then
-      local gruvbox = require("gruvbox")
-      gruvbox.setup({
-      	contrast = "soft", 
-      	transparent_mode = false,
-        overrides = {
-      		Type = { link = "GruvboxOrange" },
-      		["@operator"] = { link = "GruvboxRed" },
-      		["@type.definition.go"] = { link = "GruvboxOrange"},
-          ["@variable.parameter"] = { link = "GruvboxFg2" },
-      		["@variable.member"] = { link = "GruvboxFg2" },
-      		["@function"] = { link = "GruvboxAqua" },
-      		["@function.method"] = { link = "GruvboxAqua" },
-      		["@function.call"] = { link = "GruvboxAqua" },
-        }
-      })
-      vim.cmd("colorscheme gruvbox")
-    else
-      vim.cmd("colorscheme kanagawa")
-    end
-end
-
-vim.api.nvim_create_autocmd({ "VimEnter", "DirChanged" }, {
-  callback = function()
-      auto_theme_switch()
-  end,
-})
+vim.cmd("colorscheme kanagawa-dragon")
 require('lualine').setup({ options = { theme = 'catppuccin' } })

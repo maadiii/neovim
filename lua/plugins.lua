@@ -209,7 +209,6 @@ require("lazy").setup({
 		"catppuccin/nvim", 
 		name = "catppuccin"
 	},
-  {"ellisonleao/gruvbox.nvim"},
 	{"rebelot/kanagawa.nvim"},
 	{ 'tpope/vim-dotenv' },
   {

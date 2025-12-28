@@ -124,6 +124,29 @@ lsp_signature.setup({
 local orig_util_open_floating_preview = vim.lsp.util.open_floating_preview
 function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
   opts = opts or {}
-  opts.border = opts.border or "rounded"
-  return orig_util_open_floating_preview(contents, syntax, opts, ...)
+  opts.max_width = 50
+  opts.wrap = true
+  opts.border = "rounded"
+
+  local raw_text = ""
+  if type(contents) == "table" then
+    raw_text = table.concat(contents, "\n")
+  else
+    raw_text = contents
+  end
+
+  local processed_text = raw_text:gsub("([^%s])%s*@", "%1\n@")
+
+  local final_contents = vim.split(processed_text, "\n")
+
+  local bufnr, winnr = orig_util_open_floating_preview(final_contents, syntax, opts, ...)
+
+  if winnr then
+    vim.api.nvim_win_set_option(winnr, "wrap", true)
+    vim.api.nvim_win_set_option(winnr, "linebreak", true)
+    vim.api.nvim_win_set_option(winnr, "breakindent", true)
+    vim.api.nvim_win_set_width(winnr, 80)
+  end
+
+  return bufnr, winnr
 end
