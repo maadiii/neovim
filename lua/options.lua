@@ -145,7 +145,6 @@ end
 
 require('lualine').setup({
   options = {
-    theme = 'catppuccin',
     component_separators = { left = ')', right = '(' },
     section_separators = { left = '', right = '' },
   },
@@ -195,4 +194,3 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 vim.cmd("colorscheme kanagawa-dragon")
-require('lualine').setup({ options = { theme = 'catppuccin' } })
