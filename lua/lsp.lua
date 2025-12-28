@@ -145,7 +145,7 @@ function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
     vim.api.nvim_win_set_option(winnr, "wrap", true)
     vim.api.nvim_win_set_option(winnr, "linebreak", true)
     vim.api.nvim_win_set_option(winnr, "breakindent", true)
-    vim.api.nvim_win_set_width(winnr, 80)
+    vim.api.nvim_win_set_width(winnr, 120)
   end
 
   return bufnr, winnr

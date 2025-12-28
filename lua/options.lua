@@ -171,16 +171,16 @@ require('lualine').setup({
 })
 
 require'colorizer'.setup(
-  {'*'},  -- تمام فایل‌ها
+  {'*'},
   {
-    RGB      = true; -- #RGB hex codes
-    RRGGBB   = true; -- #RRGGBB hex codes
-    names    = true; -- نام‌های رنگ مثل "red"
-    RRGGBBAA = true; -- #RRGGBBAA hex codes
-    rgb_fn   = true; -- rgb() و rgba()
-    hsl_fn   = true; -- hsl() و hsla()
-    css      = true; -- enable all CSS features
-    tailwind = true; -- enable tailwind colors
+    RGB      = true; 
+    RRGGBB   = true;
+    names    = true;
+    RRGGBBAA = true;
+    rgb_fn   = true; 
+    hsl_fn   = true; 
+    css      = true;
+    tailwind = true;
   }
 )
 
@@ -194,12 +194,12 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
-require('telescope').setup{
-  defaults = {
-    file_ignore_patterns = {
-      "vendor/.*",
-      "node_modules/.*",
-      "%.git/.*",
-    },
-  }
-}
+--require('telescope').setup{
+--  defaults = {
+--    file_ignore_patterns = {
+--      "vendor/.*",
+--      "node_modules/.*",
+--      "%.git/.*",
+--    },
+--  }
+--}
