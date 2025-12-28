@@ -23,6 +23,7 @@ vim.opt.termguicolors = true
 vim.opt.colorcolumn = "79"
 vim.opt.title = true
 vim.opt.titlestring = " %{fnamemodify(getcwd(), ':~')} "
+vim.cmd("colorscheme kanagawa-dragon")
 
 local treesitter = require("nvim-treesitter")
 treesitter.setup({
@@ -193,4 +194,12 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
-vim.cmd("colorscheme kanagawa-dragon")
+require('telescope').setup{
+  defaults = {
+    file_ignore_patterns = {
+      "vendor/.*",
+      "node_modules/.*",
+      "%.git/.*",
+    },
+  }
+}

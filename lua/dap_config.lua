@@ -54,6 +54,7 @@ dap.listeners.before.event_exited["dapui_config"] = function() dapui.close() end
 vim.keymap.set("n", "<leader>dr", dap.repl.open)
 vim.keymap.set("n", "<leader>du", dapui.toggle)
 vim.keymap.set("n", "<F5>", dap.continue)
+vim.keymap.set("n", "<F6>", dap.disconnect)
 vim.keymap.set("n", "<F9>", function() dap.clear_breakpoints() end, { desc = "Dap Clear All Breakpoints" })
 vim.keymap.set("n", "<F10>", dap.step_over)
 vim.keymap.set("n", "<F11>", dap.step_into)
