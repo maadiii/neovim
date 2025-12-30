@@ -161,3 +161,7 @@ local function go_tag_modify(mode)
         if input and input ~= "" then run_cmd(input) end
     end)
 end
+
+vim.keymap.set("n", "<leader>at", function() go_tag_modify("add") end, { desc = "Add Go Tag (Smart)" })
+vim.keymap.set("n", "<leader>ct", function() go_tag_modify("remove") end, { desc = "Remove Go Tag (Smart)" })
+

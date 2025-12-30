@@ -23,7 +23,7 @@ vim.opt.termguicolors = true
 vim.opt.colorcolumn = "79"
 vim.opt.title = true
 vim.opt.titlestring = " %{fnamemodify(getcwd(), ':~')} "
-vim.cmd("colorscheme kanagawa-dragon")
+vim.cmd("colorscheme kanagawa")
 
 local treesitter = require("nvim-treesitter")
 treesitter.setup({
@@ -194,12 +194,20 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
---require('telescope').setup{
---  defaults = {
---    file_ignore_patterns = {
---      "vendor/.*",
---      "node_modules/.*",
---      "%.git/.*",
---    },
---  }
---}
+require('telescope').setup{
+  defaults = {
+    file_ignore_patterns = {
+      "vendor/.*",
+      "node_modules/.*",
+      "%.git/.*",
+    },
+  }
+}
+
+vim.api.nvim_create_autocmd("LspAttach", {
+  callback = function(args)
+    local client = vim.lsp.get_client_by_id(args.data.client_id)
+    client.server_capabilities.documentFormattingProvider = false
+    client.server_capabilities.documentRangeFormattingProvider = false
+  end,
+})

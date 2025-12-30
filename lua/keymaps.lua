@@ -101,6 +101,3 @@ vim.keymap.set({ 'n', 'v' }, '<leader>cv', function()
     require("CopilotChat").ask(input)
   end
 end, { desc = 'CopilotChat: Ask prompt' })
-
-vim.keymap.set("n", "<leader>at", function() go_tag_modify("add") end, { desc = "Add Go Tag (Smart)" })
-vim.keymap.set("n", "<leader>ct", function() go_tag_modify("remove") end, { desc = "Remove Go Tag (Smart)" })
