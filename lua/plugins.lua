@@ -103,8 +103,6 @@ require("lazy").setup({
 	{
     "stevearc/conform.nvim",
 		lazy = false,
-    event = { "BufWritePre" },
-    cmd = { "ConformInfo" },
     opts = {
       formatters_by_ft = {
         html = { "prettier" },

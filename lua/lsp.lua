@@ -79,31 +79,61 @@ preselect = cmp.PreselectMode.None,
   },
 })
 
+-- vim.api.nvim_create_autocmd("BufWritePre", {
+--   pattern = { "*.go", "*.js", "*.jsx", "*.ts", "*.tsx" },
+--   callback = function()
+--     vim.lsp.buf.format({ async = true })
+--   end,
+-- })
+-- 
+-- vim.api.nvim_create_autocmd("LspAttach", {
+--   callback = function(args)
+--     local client = vim.lsp.get_client_by_id(args.data.client_id)
+--     if client == nil or client.name ~= "gopls" then
+--       return
+--     end
+-- 
+--     vim.api.nvim_create_autocmd("BufWritePre", {
+--       buffer = args.buf,
+--       callback = function()
+--         vim.lsp.buf.code_action({
+--           context = { only = { "source.organizeImports" } },
+--           apply = true,
+--         })
+--         
+--         vim.lsp.buf.format({ async = false, timeout_ms = 2000 })
+--       end,
+--     })
+--   end,
+-- })
+
 vim.api.nvim_create_autocmd("BufWritePre", {
   pattern = { "*.go", "*.js", "*.jsx", "*.ts", "*.tsx" },
   callback = function()
-    vim.lsp.buf.format({ async = true })
-  end,
-})
+    local clients = vim.lsp.get_clients({ bufnr = 0 })
 
-vim.api.nvim_create_autocmd("LspAttach", {
-  callback = function(args)
-    local client = vim.lsp.get_client_by_id(args.data.client_id)
-    if client == nil or client.name ~= "gopls" then
-      return
-    end
-
-    vim.api.nvim_create_autocmd("BufWritePre", {
-      buffer = args.buf,
-      callback = function()
+    for _, client in ipairs(clients) do
+      if client.name == "gopls" then
+        -- gopls: organize imports + format
         vim.lsp.buf.code_action({
           context = { only = { "source.organizeImports" } },
           apply = true,
         })
-        
-        vim.lsp.buf.format({ async = false, timeout_ms = 2000 })
-      end,
-    })
+        vim.lsp.buf.format({ async = false, timeout_ms = 5000 })
+      elseif client.name == "tsserver" then
+        -- TS/JS: organize imports + format
+        vim.lsp.buf.code_action({
+          context = { only = { "source.organizeImports" } },
+          apply = true,
+        })
+        vim.lsp.buf.format({ async = false, timeout_ms = 5000 })
+      end
+    end
+
+    -- conform fallback for other filetypes
+    if vim.fn.exists(":ConformFormat") == 2 then
+      vim.cmd("ConformFormat")
+    end
   end,
 })
 
