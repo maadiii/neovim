@@ -55,10 +55,6 @@ require("lazy").setup({
     "windwp/nvim-autopairs",
     event = "InsertEnter",
   },
-  {
-    "ray-x/lsp_signature.nvim",
-    event = "VeryLazy",
-  },
 	{
 	  "nvimtools/none-ls.nvim",
 	  dependencies = { 
@@ -104,13 +100,6 @@ require("lazy").setup({
     "stevearc/conform.nvim",
 		lazy = false,
     opts = {
-      formatters_by_ft = {
-        html = { "prettier" },
-        css = { "prettier" },
-        javascript = { "prettier" },
-        javascriptreact = { "prettier" },
-        json = { "prettier" },
-      },
       format_on_save = {
         timeout_ms = 500,
         lsp_fallback = true,
@@ -214,70 +203,54 @@ require("lazy").setup({
   		},
 		}
   },
+	{
+	  "andythigpen/nvim-coverage",
+	  requires = {"nvim-lua/plenary.nvim"},
+	},
+	{
+	  "folke/noice.nvim",
+	  dependencies = { "MunifTanjim/nui.nvim" },
+	  config = function()
+	    require("noice").setup({
+	      presets = { lsp_doc_border = true },
+	    })
+	  end
+	},
   {
     "nvim-neotest/neotest",
-    event = "VeryLazy",
     dependencies = {
       "nvim-neotest/nvim-nio",
       "nvim-lua/plenary.nvim",
       "antoinemadec/FixCursorHold.nvim",
-      { "nvim-treesitter/nvim-treesitter", branch = "main" },
-
-      "nvim-neotest/neotest-plenary",
-      "nvim-neotest/neotest-vim-test",
-
+      {
+        "nvim-treesitter/nvim-treesitter", -- Optional, but recommended
+        branch = "main",  -- NOTE; not the master branch!
+        build = function()
+          vim.cmd(":TSUpdate go")
+        end,
+      },
       {
         "fredrikaverpil/neotest-golang",
-        version = "*",
-        dependencies = {
-          {
-            "leoluz/nvim-dap-go",
-            opts = {},
-          },
-        },
+        version = "*",  -- Optional, but recommended; track releases
+        build = function()
+          vim.system({"go", "install", "gotest.tools/gotestsum@latest"}):wait() -- Optional, but recommended
+        end,
       },
     },
-    opts = function(_, opts)
-      opts.adapters = opts.adapters or {}
-      opts.adapters["neotest-golang"] = {
-        go_test_args = {
-          "-v",
+    config = function(_, opts)
+      local config = {
+				go_test_args = {
           "-race",
+					"-count=1",
           "-coverprofile=" .. vim.fn.getcwd() .. "/coverage.out",
         },
+				warn_test_name_dupes = false,
       }
-    end,
-    config = function(_, opts)
-      if opts.adapters then
-        local adapters = {}
-        for name, config in pairs(opts.adapters or {}) do
-          if type(name) == "number" then
-            if type(config) == "string" then
-              config = require(config)
-            end
-            adapters[#adapters + 1] = config
-          elseif config ~= false then
-            local adapter = require(name)
-            if type(config) == "table" and not vim.tbl_isempty(config) then
-              local meta = getmetatable(adapter)
-              if adapter.setup then
-                adapter.setup(config)
-              elseif adapter.adapter then
-                adapter.adapter(config)
-                adapter = adapter.adapter
-              elseif meta and meta.__call then
-                adapter(config)
-              else
-                error("Adapter " .. name .. " does not support setup")
-              end
-            end
-            adapters[#adapters + 1] = adapter
-          end
-        end
-        opts.adapters = adapters
-      end
-
-      require("neotest").setup(opts)
+      require("neotest").setup({
+        adapters = {
+          require("neotest-golang")(config),
+        },
+      })
     end,
     keys = {
       { "gtc", function() require("neotest").run.run() end, desc = "[t]est [n]earest" },
@@ -294,5 +267,5 @@ require("lazy").setup({
       { "gtD", function() require("neotest").run.run({ vim.fn.expand("%"), strategy = "dap" }) end, desc = "Debug current file" },
     },
   },
-})
 
+})

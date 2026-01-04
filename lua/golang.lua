@@ -11,7 +11,7 @@ linters:
     - goconst
     - gocognit
     - gochecknoinits
-    - godot
+    - nlreturn
 
   disable:
     - lll
@@ -28,7 +28,6 @@ linters:
     - paralleltest
     - errorlint
     - cyclop
-    - ireturn
     - nakedret
     - revive
     - tagalign
@@ -38,7 +37,6 @@ run:
   timeout: 5m
   issues-exit-code: 1
 ]]
-
 -- -----------------------------------------
 -- Find Go project root (via go.mod)
 -- -----------------------------------------
@@ -87,7 +85,7 @@ local null_ls = require("null-ls")
 null_ls.setup({
   sources = {
     null_ls.builtins.diagnostics.golangci_lint.with({
-      command = "golangci-lint", 
+			method = null_ls.methods.DIAGNOSTICS_ON_SAVE,
     }),
   },
 })
@@ -97,26 +95,6 @@ vim.api.nvim_create_autocmd("FileType", {
   callback = function(args)
     ensure_golangci_config(args.buf)
   end,
-})
-vim.api.nvim_create_autocmd("FileType", {
-    pattern = "go",
-    callback = function()
-        vim.keymap.set("n", "gb", function()
-            vim.cmd("write") -- ذخیره فایل
-            print("Linting...")
-            local cmd = "golangci-lint run"
-            local output = vim.fn.systemlist(cmd)
-            if vim.v.shell_error ~= 0 and #output > 0 then
-                vim.fn.setqflist({}, 'r', {title = "GolangCI-Lint", lines = output})
-                vim.cmd("copen")
-            elseif vim.v.shell_error == 0 then
-                vim.cmd("cclose")
-                print("Clean! No issues found.")
-            else
-                print("Error running linter: " .. table.concat(output, " "))
-            end
-        end, { buffer = true, silent = true })
-    end
 })
 local function go_tag_modify(mode)
     local file = vim.fn.expand("%:p")
@@ -164,4 +142,3 @@ end
 
 vim.keymap.set("n", "<leader>at", function() go_tag_modify("add") end, { desc = "Add Go Tag (Smart)" })
 vim.keymap.set("n", "<leader>ct", function() go_tag_modify("remove") end, { desc = "Remove Go Tag (Smart)" })
-

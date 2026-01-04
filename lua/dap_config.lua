@@ -1,33 +1,6 @@
 require("dap-go").setup()
 local dap = require("dap")
 
-dap.adapters.go = function(callback, config)
-    local stdout = vim.loop.new_pipe(false)
-    local handle
-    local pid_or_err
-    local port = 38697
-    local opts = {
-        args = { "dap", "-l", "127.0.0.1:" .. port },
-        stdio = { stdin, stdout },
-        detached = true
-    }
-    handle, pid_or_err = vim.loop.spawn("dlv", opts, function(code)
-        stdout:close()
-        handle:close()
-    end)
-
-    stdout:read_start(function(err, data)
-        if data then
-            vim.schedule(function()
-                require('dap.repl').append(data)
-            end)
-        end
-    end)
-
-    vim.defer_fn(function()
-        callback({ type = "server", host = "127.0.0.1", port = port })
-    end, 100)
-end
 
 local dapui = require("dapui")
 dapui.setup({
@@ -51,8 +24,8 @@ dap.listeners.after.event_initialized["dapui_config"] = function() dapui.open() 
 dap.listeners.before.event_exited["dapui_config"] = function() dapui.close() end
 
 
-vim.keymap.set("n", "<leader>dr", dap.repl.open)
-vim.keymap.set("n", "<leader>du", dapui.toggle)
+-- vim.keymap.set("n", "<leader>dr", dap.repl.open)
+vim.keymap.set("n", "<leader>dt", dapui.toggle)
 vim.keymap.set("n", "<F5>", dap.continue)
 vim.keymap.set("n", "<F6>", dap.disconnect)
 vim.keymap.set("n", "<F9>", function() dap.clear_breakpoints() end, { desc = "Dap Clear All Breakpoints" })
@@ -80,4 +53,5 @@ for type, config in pairs(dap_signs) do
     })
 end
 
-dap.defaults.fallback.terminal_win_cmd = 'botright new | resize 10 | setlocal winfixheight'
+-- dap.defaults.fallback.terminal_win_cmd = 'botright new | resize 10 | setlocal winfixheight'
+

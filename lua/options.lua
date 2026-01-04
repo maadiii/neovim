@@ -27,7 +27,7 @@ vim.cmd("colorscheme kanagawa")
 
 local treesitter = require("nvim-treesitter")
 treesitter.setup({
-  ensure_installed = { "go", "lua", "tsx", "jsx", "javascript", "javascriptreact", "typescript", "typescriptreactt", "vim", "html", "css" }, 
+  ensure_installed = { "go", "lua" }, 
   highlight = {
     enable = true,
     additional_vim_regex_highlighting = true,
@@ -40,13 +40,11 @@ vim.diagnostic.config({
   virtual_text = {
       prefix = '●', -- علامت قبل از متن خطا در انتهای خط
   },
-  update_in_insert = false,
+  update_in_insert = true,
   underline = true,
   severity_sort = true,
   float = {
-      focusable = false,
-      style = "minimal",
-      border = "rounded",
+      focusable = true,
       source = "always",
       header = "",
       prefix = "",
@@ -71,7 +69,6 @@ autopairs.setup({
   check_ts = true,
   ts_config = {
     lua = { "string" },
-    javascript = { "template_string", "string" },
   },
   enable_check_bracket_pairs = true,
 })
@@ -81,15 +78,6 @@ vim.api.nvim_create_autocmd("VimEnter", {
     vim.cmd("Copilot enable")
   end,
 })
-
-vim.api.nvim_set_hl(0, "DapBreakpoint", { fg = "#fb4934" }) -- قرمز روشن
-vim.api.nvim_set_hl(0, "DapStopped", { fg = "#fabd2f", bg = "#3c3836" }) -- زرد با پس‌زمینه تیره برای خطی که دیباگر روی آن ایستاده
-vim.api.nvim_set_hl(0, "GitSignsCurrentLineBlame", {
-  fg = "#7aa2f7",
-  bg = "#1f2335",
-  italic = true,
-})
-
 
 require("todo-comments").setup {
   signs = true, -- نمایش آیکن در گوتر لاین
@@ -135,15 +123,6 @@ require('nvim-ts-autotag').setup({
   },
 })
 
-local function venv_status()
-  local venv = os.getenv("VIRTUAL_ENV")
-  if venv then
-    local venv_name = string.match(venv, "[^/]+$")
-    return venv_name -- آیکون پایتون + نام venv
-  end
-  return ""
-end
-
 require('lualine').setup({
   options = {
     component_separators = { left = ')', right = '(' },
@@ -170,20 +149,6 @@ require('lualine').setup({
   },
 })
 
-require'colorizer'.setup(
-  {'*'},
-  {
-    RGB      = true; 
-    RRGGBB   = true;
-    names    = true;
-    RRGGBBAA = true;
-    rgb_fn   = true; 
-    hsl_fn   = true; 
-    css      = true;
-    tailwind = true;
-  }
-)
-
 vim.api.nvim_create_autocmd("FileType", {
   callback = function()
     local buffer = vim.api.nvim_get_current_buf()
@@ -198,8 +163,34 @@ require('telescope').setup{
   defaults = {
     file_ignore_patterns = {
       "vendor/.*",
-      "node_modules/.*",
       "%.git/.*",
     },
   }
 }
+
+require("coverage").setup({
+	commands = true,
+	highlights = {
+		covered = { fg = "#C3E88D", bg = "#C3E88D", sp = "#C3E88D" },   -- supports style, fg, bg, sp (see :h highlight-gui)
+		uncovered = { fg = "#F07178", bg = "#F07178", sp = "#F07178" },
+	},
+})
+
+local coverage_visible = false
+toggle_coverage = function()
+  local coverage = require("coverage")
+  if _G.coverage_visible then
+    coverage.load(false)
+    _G.coverage_visible = false
+  else
+    coverage.load(true)
+    _G.coverage_visible = true
+  end
+end
+
+vim.api.nvim_set_keymap(
+  "n",
+  "<leader>co",
+  ":lua toggle_coverage()<CR>",
+  { noremap = true, silent = true }
+)

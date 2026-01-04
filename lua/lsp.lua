@@ -17,27 +17,7 @@ vim.lsp.config("gopls", {
         unusedparams = true,
         nilness = true,
         unusedwrite = true,
-      },
-    },
-  },
-})
-
-vim.lsp.enable("ts_ls")
-vim.lsp.config("ts_ls", {
-	on_attach = on_attach,
-  settings = {
-    javascript = {
-      suggest = {
-        completeFunctionCalls = true,
-      },
-      inlayHints = {
-        includeInlayParameterNameHints = "all",
-        includeInlayVariableTypeHints = true,
-      },
-    },
-    typescript = {
-      suggest = {
-        completeFunctionCalls = true,
+				shadow = true
       },
     },
   },
@@ -47,12 +27,6 @@ vim.lsp.enable("dockerls")
 vim.lsp.config("dockerls", {
 	on_attach = on_attach,
 })
-
-vim.lsp.enable("html")
-vim.lsp.enable("cssls")
-vim.lsp.enable("emmet_ls")
-vim.lsp.config("emmet_ls", { filetypes = { "html", "css", "sass", "scss", "less", "javascriptreact", "typescriptreact" }})
-vim.lsp.config("html", { settings = { html = { format = { indentInnerHtml = true }}}})
 
 vim.diagnostic.config({
   virtual_text = {
@@ -65,91 +39,62 @@ vim.diagnostic.config({
 
 local cmp = require("cmp")
 cmp.setup({
-preselect = cmp.PreselectMode.None,
-  mapping = cmp.mapping.preset.insert({
-    ["<C-Space>"] = cmp.mapping.complete(),
-    ["<CR>"] = cmp.mapping.confirm({ select = true }),
-    ["<Tab>"] = cmp.mapping.select_next_item(),
-    ["<S-Tab>"] = cmp.mapping.select_prev_item(),
-  }),
+  window = {
+    completion = cmp.config.window.bordered(),
+    documentation = cmp.config.window.bordered(),
+  },
+  preselect = cmp.PreselectMode.None,
   sources = {
     { name = "nvim_lsp" },
     { name = "buffer" },
     { name = "path" },
   },
+  mapping = {
+    ["<C-Space>"] = cmp.mapping.complete(),
+    ["<CR>"] = cmp.mapping(function(fallback)
+      if cmp.visible() and cmp.get_selected_entry() then
+        cmp.confirm({ select = false })
+      else
+        fallback()
+      end
+    end, { "i", "s" }),
+
+    ["<Tab>"] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_next_item()
+      else
+        fallback()
+      end
+    end, { "i", "s" }),
+
+    ["<S-Tab>"] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_prev_item()
+      else
+        fallback()
+      end
+    end, { "i", "s" }),
+  },
 })
 
--- vim.api.nvim_create_autocmd("BufWritePre", {
---   pattern = { "*.go", "*.js", "*.jsx", "*.ts", "*.tsx" },
---   callback = function()
---     vim.lsp.buf.format({ async = true })
---   end,
--- })
--- 
--- vim.api.nvim_create_autocmd("LspAttach", {
---   callback = function(args)
---     local client = vim.lsp.get_client_by_id(args.data.client_id)
---     if client == nil or client.name ~= "gopls" then
---       return
---     end
--- 
---     vim.api.nvim_create_autocmd("BufWritePre", {
---       buffer = args.buf,
---       callback = function()
---         vim.lsp.buf.code_action({
---           context = { only = { "source.organizeImports" } },
---           apply = true,
---         })
---         
---         vim.lsp.buf.format({ async = false, timeout_ms = 2000 })
---       end,
---     })
---   end,
--- })
-
 vim.api.nvim_create_autocmd("BufWritePre", {
-  pattern = { "*.go", "*.js", "*.jsx", "*.ts", "*.tsx" },
+  pattern = { "*.go" },
   callback = function()
     local clients = vim.lsp.get_clients({ bufnr = 0 })
 
     for _, client in ipairs(clients) do
       if client.name == "gopls" then
-        -- gopls: organize imports + format
         vim.lsp.buf.code_action({
           context = { only = { "source.organizeImports" } },
           apply = true,
         })
-        vim.lsp.buf.format({ async = false, timeout_ms = 5000 })
-      elseif client.name == "tsserver" then
-        -- TS/JS: organize imports + format
-        vim.lsp.buf.code_action({
-          context = { only = { "source.organizeImports" } },
-          apply = true,
-        })
-        vim.lsp.buf.format({ async = false, timeout_ms = 5000 })
-      end
-    end
 
-    -- conform fallback for other filetypes
-    if vim.fn.exists(":ConformFormat") == 2 then
-      vim.cmd("ConformFormat")
+        vim.lsp.buf.format({ async = true, timeout_ms = 5000 })
+      end
     end
   end,
 })
 
-local lsp_signature = require("lsp_signature")
-lsp_signature.setup({
-  bind = true,
-  handler_opts = {
-    border = "rounded"
-  },
-  floating_window = true,
-  floating_window_above_cur = false,
-  hint_enable = false,
-  hint_prefix = "",
-  padding = '',
-  always_trigger = false,
-})
 
 local orig_util_open_floating_preview = vim.lsp.util.open_floating_preview
 function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
