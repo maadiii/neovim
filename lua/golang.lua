@@ -81,21 +81,13 @@ local function ensure_golangci_config(bufnr)
 end
 
 
-local null_ls = require("null-ls")
-null_ls.setup({
-  sources = {
-    null_ls.builtins.diagnostics.golangci_lint.with({
-			method = null_ls.methods.DIAGNOSTICS_ON_SAVE,
-    }),
-  },
-})
-
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "go",
   callback = function(args)
     ensure_golangci_config(args.buf)
   end,
 })
+
 local function go_tag_modify(mode)
     local file = vim.fn.expand("%:p")
     local line_num = vim.fn.line(".")
@@ -114,7 +106,7 @@ local function go_tag_modify(mode)
                     vim.fn.shellescape(file), target, vim.fn.shellescape(tag_name), 
                     vim.fn.shellescape(tag_name), vim.fn.shellescape(tag_value))
             else
-                cmd = string.format("gomodifytags -file %s %s -add-tags %s -transform snakecase -w",
+                cmd = string.format("gomodifytags -file %s %s -add-tags %s -transform camelcase -w",
                     vim.fn.shellescape(file), target, vim.fn.shellescape(user_input))
             end
         elseif mode == "remove" then
@@ -141,4 +133,21 @@ local function go_tag_modify(mode)
 end
 
 vim.keymap.set("n", "<leader>at", function() go_tag_modify("add") end, { desc = "Add Go Tag (Smart)" })
-vim.keymap.set("n", "<leader>ct", function() go_tag_modify("remove") end, { desc = "Remove Go Tag (Smart)" })
+vim.keymap.set("n", "<leader>rt", function() go_tag_modify("remove") end, { desc = "Remove Go Tag (Smart)" })
+
+vim.api.nvim_create_autocmd("BufWritePre", {
+  pattern = "*.go",
+  callback = function()
+    local clients = vim.lsp.get_clients({ bufnr = 0 })
+    for _, client in ipairs(clients) do
+      if client.name == "gopls" then
+        vim.lsp.buf.code_action({
+          context = { only = { "source.organizeImports" } },
+          apply = true,
+        })
+
+        vim.lsp.buf.format({ async = true, timeout_ms = 5000 })
+      end
+    end
+  end,
+})

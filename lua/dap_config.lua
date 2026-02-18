@@ -1,7 +1,5 @@
 require("dap-go").setup()
 local dap = require("dap")
-
-
 local dapui = require("dapui")
 dapui.setup({
   layouts = {
@@ -19,12 +17,13 @@ dapui.setup({
   },
 })
 
+
 dap.listeners.after.event_initialized["dapui_config"] = function() dapui.open() end
 --dap.listeners.before.event_terminated["dapui_config"] = function() dapui.close() end
 dap.listeners.before.event_exited["dapui_config"] = function() dapui.close() end
 
 
--- vim.keymap.set("n", "<leader>dr", dap.repl.open)
+vim.keymap.set("n", "<leader>dr", dap.repl.toggle)
 vim.keymap.set("n", "<leader>dt", dapui.toggle)
 vim.keymap.set("n", "<F5>", dap.continue)
 vim.keymap.set("n", "<F6>", dap.disconnect)
@@ -43,7 +42,6 @@ local dap_signs = {
     Stopped             = { text = "󰁕 ", texthl = "DapStopped", numhl = "DapStopped" },
 }
 
--- اعمال تنظیمات در نئوویم
 for type, config in pairs(dap_signs) do
     local hl = "Dap" .. type
     vim.fn.sign_define(hl, { 
@@ -53,5 +51,21 @@ for type, config in pairs(dap_signs) do
     })
 end
 
--- dap.defaults.fallback.terminal_win_cmd = 'botright new | resize 10 | setlocal winfixheight'
-
+dap.adapters.dart = {
+  type = "executable",
+  command = "dart",
+  -- This command was introduced upstream in https://github.com/dart-lang/sdk/commit/b68ccc9a
+  args = {"debug_adapter"}
+}
+dap.configurations.dart = {
+  {
+    type = "dart",
+    request = "launch",
+    name = "Launch Dart Program",
+    -- The nvim-dap plugin populates this variable with the filename of the current buffer
+    program = "${file}",
+    -- The nvim-dap plugin populates this variable with the editor's current working directory
+    cwd = "${workspaceFolder}",
+    -- args = {"--help"}, -- Note for Dart apps this is args, for Flutter apps toolArgs
+  }
+}

@@ -27,7 +27,7 @@ vim.cmd("colorscheme kanagawa")
 
 local treesitter = require("nvim-treesitter")
 treesitter.setup({
-  ensure_installed = { "go", "lua" }, 
+  ensure_installed = { "go", "lua", "javascript", "typescript", "js", "ts", "tsx", "jsx", "html", "css", "json", "javascriptreact", "typescriptreact" }, 
   highlight = {
     enable = true,
     additional_vim_regex_highlighting = true,
@@ -162,10 +162,12 @@ vim.api.nvim_create_autocmd("FileType", {
 require('telescope').setup{
   defaults = {
     file_ignore_patterns = {
-      "vendor/.*",
-      "%.git/.*",
+      -- "node_modules",
+      "%.git/",
+			-- "/usr/local/go",
+      ".cache",
     },
-  }
+  },
 }
 
 require("coverage").setup({
@@ -194,3 +196,36 @@ vim.api.nvim_set_keymap(
   ":lua toggle_coverage()<CR>",
   { noremap = true, silent = true }
 )
+
+require'colorizer'.setup(
+  {'*'},  -- تمام فایل‌ها
+  {
+    RGB      = true; -- #RGB hex codes
+    RRGGBB   = true; -- #RRGGBB hex codes
+    names    = true; -- نام‌های رنگ مثل "red"
+    RRGGBBAA = true; -- #RRGGBBAA hex codes
+    rgb_fn   = true; -- rgb() و rgba()
+    hsl_fn   = true; -- hsl() و hsla()
+    css      = true; -- enable all CSS features
+    tailwind = true; -- enable tailwind colors
+  }
+)
+
+local null_ls = require("null-ls")
+null_ls.setup({
+  sources = {
+    null_ls.builtins.diagnostics.golangci_lint.with({
+      method = null_ls.methods.DIAGNOSTICS_ON_SAVE,
+    }),
+
+    null_ls.builtins.formatting.prettier.with({
+			extra_args = { "--config", vim.fn.getcwd() .. "/.prettierrc" },
+      filetypes = {
+        "js", "ts", "jsx", "tsx", "javascript", "typescript", "javascriptreact", "typescriptreact",
+        "html", "css", "scss", "json", "markdown",
+      },
+    }),
+  },
+})
+
+require("flutter-tools").setup{}

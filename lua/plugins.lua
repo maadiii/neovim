@@ -216,6 +216,17 @@ require("lazy").setup({
 	    })
 	  end
 	},
+	{
+	  "dart-lang/dart-vim-plugin"
+	},
+	{
+	  'nvim-flutter/flutter-tools.nvim',
+	  lazy = false,
+	  dependencies = {
+	      'nvim-lua/plenary.nvim',
+	  },
+	  config = true,
+	},
   {
     "nvim-neotest/neotest",
     dependencies = {

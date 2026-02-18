@@ -57,20 +57,20 @@ vim.keymap.set('n', 'gh', vim.lsp.buf.hover, { desc = "LSP: Hover Documentation"
 vim.keymap.set('n', 'gx', vim.lsp.buf.rename, { desc = "LSP: Rename" })
 
 vim.keymap.set('n', 'gv', function()
-  require('telescope.builtin').lsp_definitions({ jump_type = "vsplit" })
+  require('telescope.builtin').lsp_definitions({ jump_type = "vsplit", theme = "ivy" })
 end, { desc = "Telescope: Definition (Vertical Split)" })
 
 vim.keymap.set('n', 'gs', function()
-  require('telescope.builtin').lsp_definitions({ jump_type = "split" })
+  require('telescope.builtin').lsp_definitions({ jump_type = "split", theme = "ivy"})
 end, { desc = "Telescope: Definition (Horizontal Split)" })
 
 vim.keymap.set('n', 'gD', function()
     local params = vim.lsp.util.make_position_params()
     vim.lsp.buf_request(0, 'textDocument/declaration', params, function(err, result, ctx, config)
         if err or not result or vim.tbl_isempty(result) then
-            builtin.lsp_definitions()
+            builtin.lsp_definitions({theme = "ivy"})
         else
-            builtin.lsp_declarations()
+            builtin.lsp_declarations({theme = "ivy"})
         end
     end)
 end, { desc = "Telescope: Declaration (Fallback to Definition)" })
