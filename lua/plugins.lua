@@ -38,7 +38,9 @@ require("lazy").setup({
       "hrsh7th/cmp-path",
     },
   },
-  { "mfussenegger/nvim-dap" },
+  { 
+		"mfussenegger/nvim-dap",
+	},
   {
     "leoluz/nvim-dap-go",
     dependencies = { "mfussenegger/nvim-dap" },
@@ -75,37 +77,11 @@ require("lazy").setup({
     opts = {
       debug = false,
     },
-    keys = {
-      { "<leader>cc", "<cmd>CopilotChatToggle<cr>", desc = "Toggle Copilot Chat" },
-      {
-        "<leader>ce",
-        ":CopilotChatExplain<cr>",
-        mode = "v",
-        desc = "CopilotChat - Explain code",
-      },
-    },
   },
 	{
 	  'nvim-lualine/lualine.nvim',
 	  dependencies = { 'nvim-tree/nvim-web-devicons' },
 	},
-  {
-    'barrett-ruth/live-server.nvim',
-		lazy = false,
-    build = 'npm add -g live-server',
-    cmd = { 'LiveServerStart', 'LiveServerStop' },
-    config = true
-  },
-	{
-    "stevearc/conform.nvim",
-		lazy = false,
-    opts = {
-      format_on_save = {
-        timeout_ms = 500,
-        lsp_fallback = true,
-      },
-    },
-  },
   {
     "windwp/nvim-ts-autotag",
     dependencies = { "nvim-treesitter/nvim-treesitter" },
@@ -137,62 +113,16 @@ require("lazy").setup({
   },
 	{
 	  "sphamba/smear-cursor.nvim",
-	
 	  opts = {
-	    -- Smear cursor when switching buffers or windows.
 	    smear_between_buffers = true,
-	
-	    -- Smear cursor when moving within line or to neighbor lines.
-	    -- Use `min_horizontal_distance_smear` and `min_vertical_distance_smear` for finer control
 	    smear_between_neighbor_lines = true,
-	
-	    -- Draw the smear in buffer space instead of screen space when scrolling
 	    scroll_buffer_space = true,
-	
-	    -- Set to `true` if your font supports legacy computing symbols (block unicode symbols).
-	    -- Smears and particles will look a lot less blocky.
 	    legacy_computing_symbols_support = false,
-	
-	    -- Smear cursor in insert mode.
-	    -- See also `vertical_bar_cursor_insert_mode` and `distance_stop_animating_vertical_bar`.
 	    smear_insert_mode = true,
 	  },
 	},
-  {
-    "tpope/vim-dadbod",
-    lazy = true,
-  },
-  {
-    "kristijanhusak/vim-dadbod-ui",
-    dependencies = {
-      { "tpope/vim-dadbod", lazy = true },
-      { 
-				"kristijanhusak/vim-dadbod-completion", 
-				ft = { "psql", "sql", "mysql", "plsql" }, 
-				lazy = true,
-			},
-    },
-    cmd = {
-      "DBUI",
-      "DBUIToggle",
-      "DBUIAddConnection",
-      "DBUIFindBuffer",
-    },
-		init = function()
-      vim.api.nvim_create_autocmd("FileType", {
-        pattern = { "psql", "sql", "mysql", "plsql" },
-        callback = function()
-          require("cmp").setup.buffer({
-            sources = {
-              { name = "vim-dadbod-completion" },
-              { name = "buffer" },
-            },
-          })
-        end,
-      })
-    end,
-  },
 	{"rebelot/kanagawa.nvim"},
+	{"ellisonleao/gruvbox.nvim"},
 	{ 'tpope/vim-dotenv' },
   {
     "lukas-reineke/indent-blankline.nvim",
@@ -216,17 +146,6 @@ require("lazy").setup({
 	    })
 	  end
 	},
-	{
-	  "dart-lang/dart-vim-plugin"
-	},
-	{
-	  'nvim-flutter/flutter-tools.nvim',
-	  lazy = false,
-	  dependencies = {
-	      'nvim-lua/plenary.nvim',
-	  },
-	  config = true,
-	},
   {
     "nvim-neotest/neotest",
     dependencies = {
@@ -236,9 +155,6 @@ require("lazy").setup({
       {
         "nvim-treesitter/nvim-treesitter", -- Optional, but recommended
         branch = "main",  -- NOTE; not the master branch!
-        build = function()
-          vim.cmd(":TSUpdate go")
-        end,
       },
       {
         "fredrikaverpil/neotest-golang",
@@ -247,9 +163,13 @@ require("lazy").setup({
           vim.system({"go", "install", "gotest.tools/gotestsum@latest"}):wait() -- Optional, but recommended
         end,
       },
+			{
+				"nvim-neotest/neotest-python",
+  			"nvim-neotest/neotest-plenary",
+			},
     },
     config = function(_, opts)
-      local config = {
+      local goconfig = {
 				go_test_args = {
           "-race",
 					"-count=1",
@@ -257,9 +177,21 @@ require("lazy").setup({
         },
 				warn_test_name_dupes = false,
       }
+  		local pythonconfig = {
+  		  dap = { justMyCode = false },
+  		  python = function()
+  		    -- اتوماتیک virtualenv را پیدا می‌کند
+  		    local venv_python = vim.fn.getcwd() .. "/.venv/bin/python"
+  		    if vim.fn.filereadable(venv_python) == 1 then
+  		      return venv_python
+  		    end
+  		    return "python" -- fallback
+  		  end,
+  		}
       require("neotest").setup({
         adapters = {
-          require("neotest-golang")(config),
+          require("neotest-golang")(goconfig),
+          require("neotest-python")(pythonconfig),
         },
       })
     end,
@@ -278,5 +210,4 @@ require("lazy").setup({
       { "gtD", function() require("neotest").run.run({ vim.fn.expand("%"), strategy = "dap" }) end, desc = "Debug current file" },
     },
   },
-
 })

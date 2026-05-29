@@ -2,7 +2,6 @@ local golangci_config = [[
 version: 2
 
 linters:
-  enable-all: true
   enable:
     - forbidigo
     - gocritic
@@ -12,34 +11,23 @@ linters:
     - gocognit
     - gochecknoinits
     - nlreturn
-
-  disable:
     - lll
     - mnd
-    - exhaustruct
-    - wrapcheck
     - forcetypeassert
     - tagliatelle
     - dupl
-    - varnamelen
-    - depguard
     - nonamedreturns
     - gochecknoglobals
     - paralleltest
-    - errorlint
     - cyclop
     - nakedret
-    - revive
-    - tagalign
     - recvcheck
-    - err113
+
 run:
   timeout: 5m
   issues-exit-code: 1
 ]]
--- -----------------------------------------
--- Find Go project root (via go.mod)
--- -----------------------------------------
+
 local function go_project_root(bufnr)
   local bufname = vim.api.nvim_buf_get_name(bufnr)
   local gomod = vim.fs.find("go.mod", {
@@ -54,9 +42,6 @@ local function go_project_root(bufnr)
   return nil
 end
 
--- -----------------------------------------
--- Ensure .golangci.yml exists
--- -----------------------------------------
 local function ensure_golangci_config(bufnr)
   local root = go_project_root(bufnr)
   if not root then
@@ -151,3 +136,4 @@ vim.api.nvim_create_autocmd("BufWritePre", {
     end
   end,
 })
+

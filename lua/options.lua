@@ -20,14 +20,24 @@ vim.o.splitright = true
 vim.o.undofile = true
 vim.opt.termguicolors = true
 -- vim.o.guicursor = "n-v-c-sm:block"
-vim.opt.colorcolumn = "79"
+--vim.opt.colorcolumn = "79"
 vim.opt.title = true
 vim.opt.titlestring = " %{fnamemodify(getcwd(), ':~')} "
+
+require('kanagawa').setup({
+  overrides = function(colors)
+    return {
+     ["@lsp.typemod.function.readonly"] = { bold = false },
+    }
+  end,
+})
 vim.cmd("colorscheme kanagawa")
 
 local treesitter = require("nvim-treesitter")
 treesitter.setup({
-  ensure_installed = { "go", "lua", "javascript", "typescript", "js", "ts", "tsx", "jsx", "html", "css", "json", "javascriptreact", "typescriptreact" }, 
+  ensure_installed = { 
+		"go", "pyright", "ruff_lsp", "lua", "javascript", "typescript", "js", "ts", "tsx", "jsx", 
+		"html", "css", "json", "javascriptreact", "typescriptreact", "prisma" }, 
   highlight = {
     enable = true,
     additional_vim_regex_highlighting = true,
@@ -162,9 +172,9 @@ vim.api.nvim_create_autocmd("FileType", {
 require('telescope').setup{
   defaults = {
     file_ignore_patterns = {
-      -- "node_modules",
       "%.git/",
-			-- "/usr/local/go",
+			"/usr/local/go",
+			-- "vendor",
       ".cache",
     },
   },
@@ -197,35 +207,11 @@ vim.api.nvim_set_keymap(
   { noremap = true, silent = true }
 )
 
-require'colorizer'.setup(
-  {'*'},  -- تمام فایل‌ها
-  {
-    RGB      = true; -- #RGB hex codes
-    RRGGBB   = true; -- #RRGGBB hex codes
-    names    = true; -- نام‌های رنگ مثل "red"
-    RRGGBBAA = true; -- #RRGGBBAA hex codes
-    rgb_fn   = true; -- rgb() و rgba()
-    hsl_fn   = true; -- hsl() و hsla()
-    css      = true; -- enable all CSS features
-    tailwind = true; -- enable tailwind colors
-  }
-)
-
 local null_ls = require("null-ls")
 null_ls.setup({
   sources = {
     null_ls.builtins.diagnostics.golangci_lint.with({
-      method = null_ls.methods.DIAGNOSTICS_ON_SAVE,
-    }),
-
-    null_ls.builtins.formatting.prettier.with({
-			extra_args = { "--config", vim.fn.getcwd() .. "/.prettierrc" },
-      filetypes = {
-        "js", "ts", "jsx", "tsx", "javascript", "typescript", "javascriptreact", "typescriptreact",
-        "html", "css", "scss", "json", "markdown",
-      },
+      method = null_ls.methods.DIAGNOSTICS,
     }),
   },
 })
-
-require("flutter-tools").setup{}

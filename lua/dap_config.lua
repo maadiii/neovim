@@ -1,26 +1,28 @@
-require("dap-go").setup()
 local dap = require("dap")
 local dapui = require("dapui")
 dapui.setup({
   layouts = {
     {
+      size = 30,
+      position = "left",
       elements = {
         { id = "scopes", size = 0.35 },
         { id = "breakpoints", size = 0.15 },
         { id = "stacks", size = 0.25 },
         { id = "watches", size = 0.25 },
       },
-      size = 30,
-      position = "left",
     },
-    { elements = { "repl" }, size = 0.25, position = "bottom" },
+    {
+      elements = {
+        { id = "repl", size = 1 },
+      },
+      size = 8,
+      position = "bottom",
+    },
   },
 })
 
-
 dap.listeners.after.event_initialized["dapui_config"] = function() dapui.open() end
---dap.listeners.before.event_terminated["dapui_config"] = function() dapui.close() end
-dap.listeners.before.event_exited["dapui_config"] = function() dapui.close() end
 
 
 vim.keymap.set("n", "<leader>dr", dap.repl.toggle)
@@ -51,21 +53,4 @@ for type, config in pairs(dap_signs) do
     })
 end
 
-dap.adapters.dart = {
-  type = "executable",
-  command = "dart",
-  -- This command was introduced upstream in https://github.com/dart-lang/sdk/commit/b68ccc9a
-  args = {"debug_adapter"}
-}
-dap.configurations.dart = {
-  {
-    type = "dart",
-    request = "launch",
-    name = "Launch Dart Program",
-    -- The nvim-dap plugin populates this variable with the filename of the current buffer
-    program = "${file}",
-    -- The nvim-dap plugin populates this variable with the editor's current working directory
-    cwd = "${workspaceFolder}",
-    -- args = {"--help"}, -- Note for Dart apps this is args, for Flutter apps toolArgs
-  }
-}
+require("dap-go").setup({})
