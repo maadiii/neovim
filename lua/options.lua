@@ -211,9 +211,10 @@ vim.api.nvim_set_keymap(
 local null_ls = require("null-ls")
 null_ls.setup({
   sources = {
-    null_ls.builtins.diagnostics.golangci_lint.with({
-      method = null_ls.methods.DIAGNOSTICS,
-    }),
+    -- golangci_lint defaults to DIAGNOSTICS_ON_SAVE (runs the expensive
+    -- full-project lint once on :w). Do NOT re-register it under the plain
+    -- DIAGNOSTICS (didChange) method or it stops running on save.
+    null_ls.builtins.diagnostics.golangci_lint,
 
     null_ls.builtins.formatting.prettier.with({
       filetypes = {
@@ -224,4 +225,24 @@ null_ls.setup({
       },
     }),
   },
+})
+
+-- golangci-lint v2 as the Go formatter on save.
+-- It runs `fmt --stdin` from the module root so it picks up the `formatters:`
+-- section of the project's .golangci.yml (gofmt/goimports/...).
+-- Formatting is triggered by the BufWritePre in lua/golang.lua, filtered to the
+-- "null-ls" client only (so gopls does not also reformat / fight over imports).
+local null_utils = require("null-ls.utils")
+null_ls.register({
+  name = "golangci-lint",
+  method = null_ls.methods.FORMATTING,
+  filetypes = { "go" },
+  generator = null_ls.formatter({
+    command = "golangci-lint",
+    args = { "fmt", "--stdin" },
+    to_stdin = true,
+    cwd = function(params)
+      return null_utils.root_pattern("go.mod")(params.bufname)
+    end,
+  }),
 })

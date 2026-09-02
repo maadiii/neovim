@@ -24,11 +24,14 @@ linters:
     - recvcheck
     - staticcheck
     - errcheck
-    - gosimple
     - ineffassign
     - revive
     - gocyclo
+
+formatters:
+  enable:
     - gofmt
+    - goimports
 
 run:
   timeout: 5m
@@ -127,19 +130,19 @@ end
 vim.keymap.set("n", "<leader>at", function() go_tag_modify("add") end, { desc = "Add Go Tag (Smart)" })
 vim.keymap.set("n", "<leader>rt", function() go_tag_modify("remove") end, { desc = "Remove Go Tag (Smart)" })
 
+-- Format on save with golangci-lint v2 (via the none-ls FORMATTING source
+-- registered in lua/options.lua). Filtered to the none-ls client so gopls does
+-- not also format and clash over import grouping.
 vim.api.nvim_create_autocmd("BufWritePre", {
   pattern = "*.go",
-  callback = function()
-    local clients = vim.lsp.get_clients({ bufnr = 0 })
-    for _, client in ipairs(clients) do
-      if client.name == "gopls" then
-        vim.lsp.buf.code_action({
-          context = { only = { "source.organizeImports" } },
-          apply = true,
-        })
-
-        vim.lsp.buf.format({ async = true, timeout_ms = 5000 })
-      end
-    end
+  callback = function(args)
+    local bufnr = args.buf
+    vim.lsp.buf.format({
+      bufnr = bufnr,
+      async = false, -- format in place before the write lands on disk
+      filter = function(client)
+        return client.name == "null-ls"
+      end,
+    })
   end,
 })
