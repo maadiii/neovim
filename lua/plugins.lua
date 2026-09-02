@@ -11,6 +11,12 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
+	{ 
+		"mason-org/mason.nvim",
+    config = function()
+      require("mason").setup()
+    end,
+	},
 	{
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
@@ -20,6 +26,7 @@ require("lazy").setup({
   { "nvim-tree/nvim-web-devicons" },
   { "nvim-lua/plenary.nvim" },
   { "MunifTanjim/nui.nvim" },
+	{ 'stevearc/dressing.nvim' },
   {
     "nvim-neo-tree/neo-tree.nvim",
     branch = "v3.x",
@@ -29,7 +36,10 @@ require("lazy").setup({
     "HiPhish/rainbow-delimiters.nvim",
     dependencies = { "nvim-treesitter/nvim-treesitter" },
   },
-  { "neovim/nvim-lspconfig" },
+  { 
+		"neovim/nvim-lspconfig",
+		ft = {"yaml", "yml"}
+	},
   {
     "hrsh7th/nvim-cmp",
     dependencies = {
@@ -121,6 +131,19 @@ require("lazy").setup({
 	    smear_insert_mode = true,
 	  },
 	},
+	{
+    "stevearc/conform.nvim",
+		lazy = false,
+    opts = {
+			formatters_by_ft = {
+				python = {"ruff_format"},
+			},
+      format_on_save = {
+        timeout_ms = 500,
+        lsp_fallback = true,
+      },
+    },
+  },
 	{"rebelot/kanagawa.nvim"},
 	{"ellisonleao/gruvbox.nvim"},
 	{ 'tpope/vim-dotenv' },
@@ -210,4 +233,44 @@ require("lazy").setup({
       { "gtD", function() require("neotest").run.run({ vim.fn.expand("%"), strategy = "dap" }) end, desc = "Debug current file" },
     },
   },
+	{
+		'yioneko/nvim-vtsls'
+	},
+	{
+  	"mfussenegger/nvim-dap",
+  	dependencies = {
+  	  "williamboman/mason.nvim",
+  	  "jay-babu/mason-nvim-dap.nvim", -- این پل بین mason و dap رو می‌سازه
+  	},
+  	config = function()
+  	  require("mason-nvim-dap").setup({
+  	    ensure_installed = { "codelldb" },
+  	    automatic_installation = true,
+  	  })
+  	  -- بقیه‌ی کانفیگ dap اینجا
+  	end,
+	},
+ 	{
+    "mrcjkb/rustaceanvim",
+    lazy = false,   -- این پلاگین نباید lazy-load بشه
+    ft = { "rust" },
+    dependencies = {
+      "williamboman/mason.nvim",
+    },
+  },
+	{
+	  "saecki/crates.nvim",
+	  event = { "BufRead Cargo.toml" },
+	  config = function()
+	    require("crates").setup()
+	  end,
+	},
+	{
+	  "mfussenegger/nvim-dap",
+	  dependencies = {
+	    "rcarriga/nvim-dap-ui",
+	    "nvim-neotest/nvim-nio",
+	    "williamboman/mason.nvim",
+	  },
+	},
 })

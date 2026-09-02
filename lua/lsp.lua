@@ -18,15 +18,42 @@ vim.lsp.config("gopls", {
         unusedwrite = true,
 				shadow = true
       },
-			hints = {
+			-- hints = {
         -- parameterNames = true,
         -- assignVariableTypes = true,
         -- compositeLiteralFields = true,
         -- compositeLiteralTypes = true,
-			}
+			-- }
     },
   },
 })
+
+-- vim.lsp.enable("rust_analyzer")
+-- vim.lsp.config("rust_analyzer", {
+--   on_attach = on_attach,
+--   settings = {
+--     ["rust-analyzer"] = {
+--       cargo = {
+--         allFeatures = true,
+--         loadOutDirsFromCheck = true,
+--         buildScripts = { enable = true },
+--       },
+--       checkOnSave = true,
+--       check = {
+--         command = "clippy", -- به‌جای check ساده، از clippy استفاده کن (لینتر قوی‌تر)
+--       },
+--       procMacro = {
+--         enable = true,
+--       },
+--       hints = {
+--       	bindingModeHints = { enable = false },
+--       	closureReturnTypeHints = { enable = "always" },
+--       	parameterHints = { enable = true },
+--       	typeHints = { enable = true },
+--       }
+--     },
+--   },
+-- })
 
 vim.lsp.enable("dockerls")
 vim.lsp.config("dockerls", {
@@ -43,6 +70,7 @@ vim.diagnostic.config({
 })
 
 local cmp = require("cmp")
+-- local compare = require("cmp.config.compare")
 cmp.setup({
   preselect = cmp.PreselectMode.None,
   sources = {
@@ -51,6 +79,16 @@ cmp.setup({
     { name = "buffer"},
 		{ name = "luasnip"},
   },
+
+  -- sorting = {
+  --   comparators = {
+  --     compare.offset,
+  --     compare.exact,
+  --     compare.sort_text,
+  --     compare.order,
+  --   },
+  -- },
+
   mapping = {
     ["<C-Space>"] = cmp.mapping.complete(),
     ["<CR>"] = cmp.mapping(function(fallback)
@@ -108,5 +146,87 @@ function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
 
   return bufnr, winnr
 end
+
+-- vim.lsp.enable("ts_ls")
+-- vim.lsp.config("ts_ls", {
+-- 	on_attach = on_attach,
+--   settings = {
+--     javascript = {
+--       suggest = {
+--         completeFunctionCalls = true,
+--       },
+--       inlayHints = {
+--         includeInlayParameterNameHints = "all",
+--         includeInlayVariableTypeHints = true,
+--       },
+--     },
+--     typescript = {
+--       suggest = {
+--         completeFunctionCalls = true,
+--       },
+--     },
+--   },
+-- })
+--
+require('vtsls').config({
+  -- customize handlers for commands
+  handlers = {
+    source_definition = function(err, locations) end,
+    file_references = function(err, locations) end,
+    code_action = function(err, actions) end,
+  },
+  -- automatically trigger renaming of extracted symbol
+  refactor_auto_rename = true,
+  refactor_move_to_file = {
+    -- If dressing.nvim is installed, telescope will be used for selection prompt. Use this to customize
+    -- the opts for telescope picker.
+    telescope_opts = function(items, default) end,
+  }
+})
+vim.lsp.enable("vtsls")
+
+
+
+vim.lsp.enable("templ")
+vim.lsp.enable("html")
+vim.lsp.enable("cssls")
+vim.lsp.enable("emmet_ls")
+-- vim.lsp.enable("tailwindcss")
+vim.lsp.config("emmet_ls", { filetypes = { "html", "css", "templ", "sass", "scss", "less", "javascript", "javascriptreact", "typescript", "typescriptreact" }})
+vim.lsp.config("html", { settings = { html = { format = { indentInnerHtml = true }}}})
+vim.lsp.config("tailwindcss", {
+	filetypes = {
+    "html",
+    "css",
+    "scss",
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "jsx",
+    "tsx",
+		"js",
+		"ts",
+		"templ",
+  },
+})
+
+vim.api.nvim_create_user_command("PrismaValidate", function()
+  local fname = vim.fn.expand("%:p")
+  vim.cmd("!prisma validate --schema " .. fname)
+end, { desc = "Validate current prisma schema with prisma CLI" })
+
+vim.lsp.enable("pyright")
+vim.lsp.config("pyright", {
+	settings = {
+	  python = {
+      typeCheckingMode = "basic",   -- strict=false برای جلوگیری از false positive
+      autoSearchPaths = true,
+      useLibraryCodeForTypes = true,
+      diagnosticMode = "workspace",
+	  },
+	},
+})
+vim.lsp.enable("ruff")
 
 vim.lsp.inlay_hint.enable(true)

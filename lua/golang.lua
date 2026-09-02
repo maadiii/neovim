@@ -1,5 +1,5 @@
 local golangci_config = [[
-version: 2
+version: "2"
 
 linters:
   enable:
@@ -22,6 +22,13 @@ linters:
     - cyclop
     - nakedret
     - recvcheck
+    - staticcheck
+    - errcheck
+    - gosimple
+    - ineffassign
+    - revive
+    - gocyclo
+    - gofmt
 
 run:
   timeout: 5m
@@ -136,4 +143,3 @@ vim.api.nvim_create_autocmd("BufWritePre", {
     end
   end,
 })
-

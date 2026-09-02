@@ -29,7 +29,7 @@ require("neo-tree").setup({
     filtered_items = { 
 			hide_dotfiles = true, 
 			hide_gitignored = true, 
-			hide_by_name = { "vendor" } ,
+			hide_by_name = { "vendor", "node_modules", "__pycache__" } ,
 		},
     window = {
       mappings = {

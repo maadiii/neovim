@@ -174,8 +174,9 @@ require('telescope').setup{
     file_ignore_patterns = {
       "%.git/",
 			"/usr/local/go",
-			-- "vendor",
+			"vendor",
       ".cache",
+			"node_modules"
     },
   },
 }
@@ -212,6 +213,15 @@ null_ls.setup({
   sources = {
     null_ls.builtins.diagnostics.golangci_lint.with({
       method = null_ls.methods.DIAGNOSTICS,
+    }),
+
+    null_ls.builtins.formatting.prettier.with({
+      filetypes = {
+        "javascript",
+        "typescript",
+        "json",
+        "markdown",
+      },
     }),
   },
 })

@@ -91,7 +91,6 @@ vim.keymap.set('n', '<leader>ac', vim.lsp.buf.code_action, { desc = "LSP Quick F
 vim.keymap.set('n', '<space>g', ':LazyGit<CR>', {desc = 'Open LazyGit'})
 vim.keymap.set('n', '<leader>db', '<cmd>DBUIToggle<CR>', {desc = 'Open DBUI'})
 
-vim.keymap.set('n', '<leader>cc', '<cmd>CopilotChatToggle<CR>', {desc = 'CopilotChat toggle'})
 vim.keymap.set('n', '<leader>ce', '<cmd>CopilotChatExplain<CR>', {desc = 'CopilotChat explain code'})
 vim.keymap.set({ 'n', 'v' }, '<leader>cc', function()
   require("CopilotChat").toggle()
