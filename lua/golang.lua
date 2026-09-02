@@ -25,7 +25,6 @@ linters:
     - staticcheck
     - errcheck
     - ineffassign
-    - revive
     - gocyclo
 
 formatters:
