@@ -174,7 +174,7 @@ require('telescope').setup{
     file_ignore_patterns = {
       "%.git/",
 			"/usr/local/go",
-			"vendor",
+			-- "vendor",
       ".cache",
 			"node_modules"
     },
