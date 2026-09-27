@@ -167,7 +167,7 @@ vim.lsp.config("ts_ls", {
     },
   },
 })
-vim.lsp.enable("ts_ls")
+vim.lsp.enable("ts_ls", "es_lint")
 
 require('vtsls').config({
   -- customize handlers for commands

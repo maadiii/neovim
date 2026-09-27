@@ -58,90 +58,127 @@ require("dap-go").setup({})
 
 dap.adapters.python = {
   type = "executable",
-  command = "python3",
+  command = "python",
   args = { "-m", "debugpy.adapter" },
 }
 
+local function get_fastapi_entrypoint()
+  local cwd = vim.fn.getcwd()
+
+  local pyproject = cwd .. "/pyproject.toml"
+  if vim.fn.filereadable(pyproject) == 1 then
+    local lines = vim.fn.readfile(pyproject)
+    for _, line in ipairs(lines) do
+      local match = line:match('entrypoint%s*=%s*"([^"]+)"')
+      if match then
+        return match
+      end
+    end
+  end
+
+  local src_dirs = vim.fn.glob(cwd .. "/src/*/main.py", false, true)
+  if #src_dirs > 0 then
+    local pkg = vim.fn.fnamemodify(vim.fn.fnamemodify(src_dirs[1], ":h"), ":t")
+    return pkg .. ".main:app"
+  end
+
+  if vim.fn.filereadable(cwd .. "/main.py") == 1 then
+    return "main:app"
+  end
+
+  return "main:app"
+end
+
+local function get_python_path()
+  local cwd = vim.fn.getcwd()
+  local candidates = {
+    cwd .. "/.venv/Scripts/python.exe",
+    cwd .. "/venv/Scripts/python.exe",
+    cwd .. "/env/Scripts/python.exe",
+    cwd .. "/.venv/bin/python3",
+    cwd .. "/venv/bin/python3",
+    cwd .. "/env/bin/python3",
+  }
+  for _, path in ipairs(candidates) do
+    if vim.fn.filereadable(path) == 1 then
+      return path
+    end
+  end
+  return "python"
+end
+
+
 dap.configurations.python = {
   {
-    type = 'python';
-    request = 'launch';
-    name = "Launch file";
-    program = "${file}";
-    console = "integratedTerminal";
+    type = 'python',
+    request = 'launch',
+    name = "Launch file",
+    program = "${file}",
+    console = "integratedTerminal",
+    pythonPath = get_python_path,
   },
   {
     type = "python",
     request = "launch",
     name = "Launch file with Args",
     program = "${file}",
-    console = "integratedTerminal";
-    pythonPath = function()
-      local venv = vim.fn.getcwd() .. "/.venv/bin/python3"
-      if vim.fn.filereadable(venv) == 1 then
-        return venv
-      end
-      return "python3"
-    end,
+    console = "integratedTerminal",
+    pythonPath = get_python_path,
     args = function()
       local input = vim.fn.input("Program args: ")
       return vim.split(input, " ")
     end,
   },
-	{
-	  type = "python",
-	  request = "launch",
-	  name = "Django Run Server",
-	  program = vim.fn.getcwd() .. "/manage.py",
-	  args = { "runserver", "3000", "--noreload" },
-	  django = true,
-	  console = "integratedTerminal",
-	  justMyCode = false,
-	  pythonPath = function()
-	    local venv = vim.fn.getcwd() .. "/.venv/bin/python3"
-	    if vim.fn.filereadable(venv) == 1 then
-	      return venv
-	    end
-	    return "python3"
-	  end,
-	},
-	{
-	  type = "python",
-	  request = "launch",
-	  name = "Django Make Migration",
-	  program = vim.fn.getcwd() .. "/manage.py",
-	  args = { "makemigrations" },
-	  django = true,
-	  console = "integratedTerminal",
-	  justMyCode = false,
-	  pythonPath = function()
-	    local venv = vim.fn.getcwd() .. "/.venv/bin/python3"
-	    if vim.fn.filereadable(venv) == 1 then
-	      return venv
-	    end
-	    return "python3"
-	  end,
-	},
-	{
-	  type = "python",
-	  request = "launch",
-	  name = "Django Migrate",
-	  program = vim.fn.getcwd() .. "/manage.py",
-	  args = function()
-	    local input = vim.fn.input("Args: ", "migrate")
-	    return vim.split(input, "%s+")
-	  end,
-	  django = true,
-	  console = "integratedTerminal",
-	  justMyCode = false,
-	  pythonPath = function()
-	    local venv = vim.fn.getcwd() .. "/.venv/bin/python3"
-	    if vim.fn.filereadable(venv) == 1 then
-	      return venv
-	    end
-	    return "python3"
-	  end,
-	},
+  {
+    type = "python",
+    request = "launch",
+    name = "FastAPI (uvicorn)",
+    module = "uvicorn",
+    args = function()
+      local guess = get_fastapi_entrypoint()
+      local input = vim.fn.input("App target: ", guess .. " --port 8000")
+      return vim.split(input, "%s+")
+    end,
+    console = "integratedTerminal",
+    justMyCode = false,
+    pythonPath = get_python_path,
+  },
+  {
+    type = "python",
+    request = "launch",
+    name = "Django Run Server",
+    program = vim.fn.getcwd() .. "/manage.py",
+    args = { "runserver", "3000", "--noreload" },
+    django = true,
+    console = "integratedTerminal",
+    justMyCode = false,
+    pythonPath = get_python_path,
+  },
+  {
+    type = "python",
+    request = "launch",
+    name = "Django Make Migration",
+    program = vim.fn.getcwd() .. "/manage.py",
+    args = { "makemigrations" },
+    django = true,
+    console = "integratedTerminal",
+    justMyCode = false,
+    pythonPath = get_python_path,
+  },
+  {
+    type = "python",
+    request = "launch",
+    name = "Django Migrate",
+    program = vim.fn.getcwd() .. "/manage.py",
+    args = function()
+      local input = vim.fn.input("Args: ", "migrate")
+      return vim.split(input, "%s+")
+    end,
+    django = true,
+    console = "integratedTerminal",
+    justMyCode = false,
+    pythonPath = get_python_path,
+  },
 }
 
 local mason_registry = require("mason-registry")

@@ -228,11 +228,11 @@ null_ls.setup({
 })
 
 null_ls.register({
-  name = "golangci-lint",
+  name = "golangci-lint-v2",
   method = null_ls.methods.FORMATTING,
   filetypes = { "go" },
   generator = null_ls.formatter({
-    command = "golangci-lint",
+    command = "golangci-lint-v2",
     args = { "fmt", "--stdin" },
     to_stdin = true,
     cwd = function(params)
@@ -246,7 +246,7 @@ local golangci_lint_v2 = helpers.make_builtin({
   method = null_ls.methods.DIAGNOSTICS_ON_SAVE,
   filetypes = { "go" },
   generator_opts = {
-    command = "golangci-lint",
+    command = "golangci-lint-v2",
     args = {
       "run",
       "--fast-only",
@@ -275,7 +275,7 @@ local golangci_lint_v2 = helpers.make_builtin({
           table.insert(diags, {
             row = issue.Pos.Line,
             col = issue.Pos.Column,
-            source = issue.FromLinter or "golangci-lint",
+            source = issue.FromLinter or "golangci-lint-v2",
             message = issue.Text,
             severity = vim.diagnostic.severity.WARN,
           })
