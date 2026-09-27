@@ -147,27 +147,28 @@ function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
   return bufnr, winnr
 end
 
--- vim.lsp.enable("ts_ls")
--- vim.lsp.config("ts_ls", {
--- 	on_attach = on_attach,
---   settings = {
---     javascript = {
---       suggest = {
---         completeFunctionCalls = true,
---       },
---       inlayHints = {
---         includeInlayParameterNameHints = "all",
---         includeInlayVariableTypeHints = true,
---       },
---     },
---     typescript = {
---       suggest = {
---         completeFunctionCalls = true,
---       },
---     },
---   },
--- })
---
+vim.lsp.config("ts_ls", {
+	root_markers = { 'package.json', 'tsconfig.json', 'jsconfig.json' },
+	on_attach = on_attach,
+  settings = {
+    javascript = {
+      suggest = {
+        completeFunctionCalls = true,
+      },
+      inlayHints = {
+        includeInlayParameterNameHints = "all",
+        includeInlayVariableTypeHints = true,
+      },
+    },
+    typescript = {
+      suggest = {
+        completeFunctionCalls = true,
+      },
+    },
+  },
+})
+vim.lsp.enable("ts_ls")
+
 require('vtsls').config({
   -- customize handlers for commands
   handlers = {
@@ -191,7 +192,7 @@ vim.lsp.enable("templ")
 vim.lsp.enable("html")
 vim.lsp.enable("cssls")
 vim.lsp.enable("emmet_ls")
--- vim.lsp.enable("tailwindcss")
+vim.lsp.enable("tailwindcss")
 vim.lsp.config("emmet_ls", { filetypes = { "html", "css", "templ", "sass", "scss", "less", "javascript", "javascriptreact", "typescript", "typescriptreact" }})
 vim.lsp.config("html", { settings = { html = { format = { indentInnerHtml = true }}}})
 vim.lsp.config("tailwindcss", {

@@ -23,6 +23,8 @@ vim.opt.termguicolors = true
 --vim.opt.colorcolumn = "79"
 vim.opt.title = true
 vim.opt.titlestring = " %{fnamemodify(getcwd(), ':~')} "
+vim.opt.fileformat = "unix"
+vim.opt.fileformats = { "unix", "dos" }
 
 require('kanagawa').setup({
   overrides = function(colors)
@@ -48,7 +50,7 @@ treesitter.setup({
 
 vim.diagnostic.config({
   virtual_text = {
-      prefix = '●', -- علامت قبل از متن خطا در انتهای خط
+      prefix = '●',
   },
   update_in_insert = true,
   underline = true,
@@ -90,7 +92,7 @@ vim.api.nvim_create_autocmd("VimEnter", {
 })
 
 require("todo-comments").setup {
-  signs = true, -- نمایش آیکن در گوتر لاین
+  signs = true,
   keywords = {
     FIX = {
       icon = " ", -- icon used for the sign, and in search results
@@ -209,13 +211,11 @@ vim.api.nvim_set_keymap(
 )
 
 local null_ls = require("null-ls")
+local helpers = require("null-ls.helpers")
+local null_utils = require("null-ls.utils")
+
 null_ls.setup({
   sources = {
-    -- golangci_lint defaults to DIAGNOSTICS_ON_SAVE (runs the expensive
-    -- full-project lint once on :w). Do NOT re-register it under the plain
-    -- DIAGNOSTICS (didChange) method or it stops running on save.
-    null_ls.builtins.diagnostics.golangci_lint,
-
     null_ls.builtins.formatting.prettier.with({
       filetypes = {
         "javascript",
@@ -227,12 +227,6 @@ null_ls.setup({
   },
 })
 
--- golangci-lint v2 as the Go formatter on save.
--- It runs `fmt --stdin` from the module root so it picks up the `formatters:`
--- section of the project's .golangci.yml (gofmt/goimports/...).
--- Formatting is triggered by the BufWritePre in lua/golang.lua, filtered to the
--- "null-ls" client only (so gopls does not also reformat / fight over imports).
-local null_utils = require("null-ls.utils")
 null_ls.register({
   name = "golangci-lint",
   method = null_ls.methods.FORMATTING,
@@ -246,3 +240,51 @@ null_ls.register({
     end,
   }),
 })
+
+local golangci_lint_v2 = helpers.make_builtin({
+  name = "golangci-lint-v2",
+  method = null_ls.methods.DIAGNOSTICS_ON_SAVE,
+  filetypes = { "go" },
+  generator_opts = {
+    command = "golangci-lint",
+    args = {
+      "run",
+      "--fast-only",
+      "--output.json.path=stdout",
+      "--output.text.path=NUL",
+      "--show-stats=false",
+      "$DIRNAME",
+      "--path-prefix", "$ROOT",
+    },
+    to_stdout = true,
+    from_stderr = false,
+    ignore_stderr = true,
+    format = "json",
+    check_exit_code = function(code)
+      return code == 0 or code == 1
+    end,
+    on_output = function(params)
+      local diags = {}
+      if not params.output or not params.output.Issues then
+        return diags
+      end
+      local bufname = params.bufname:gsub("\\", "/")
+      for _, issue in ipairs(params.output.Issues) do
+        local filename = (issue.Pos.Filename or ""):gsub("\\", "/")
+        if filename ~= "" and bufname:sub(-#filename) == filename then
+          table.insert(diags, {
+            row = issue.Pos.Line,
+            col = issue.Pos.Column,
+            source = issue.FromLinter or "golangci-lint",
+            message = issue.Text,
+            severity = vim.diagnostic.severity.WARN,
+          })
+        end
+      end
+      return diags
+    end,
+  },
+  factory = helpers.generator_factory,
+})
+
+null_ls.register(golangci_lint_v2)

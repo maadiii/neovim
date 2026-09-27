@@ -3,34 +3,32 @@ version: "2"
 
 linters:
   enable:
-    - forbidigo
-    - gocritic
-    - bodyclose
-    - exhaustive
-    - goconst
-    - gocognit
-    - gochecknoinits
-    - nlreturn
-    - lll
-    - mnd
-    - forcetypeassert
-    - tagliatelle
-    - dupl
-    - nonamedreturns
-    - gochecknoglobals
-    - paralleltest
-    - cyclop
-    - nakedret
-    - recvcheck
-    - staticcheck
-    - errcheck
-    - ineffassign
-    - gocyclo
+  - forbidigo
+  - gocritic
+  - bodyclose
+  - exhaustive
+  - goconst
+  - gocognit
+  - gochecknoinits
+  - nlreturn
+  - lll
+  - mnd
+  - forcetypeassert
+  - tagliatelle
+  - dupl
+  - nonamedreturns
+  - paralleltest
+  - cyclop
+  - nakedret
+  - recvcheck
+  - staticcheck
+  - errcheck
+  - ineffassign
+  - gocyclo
 
 formatters:
   enable:
-    - gofmt
-    - goimports
+  - goimports
 
 run:
   timeout: 5m
